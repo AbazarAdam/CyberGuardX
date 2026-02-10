@@ -46,6 +46,11 @@ from app.infrastructure.security.safety_validator import SafetyValidator
 # Report generator
 from app.application.services.report_generator import PDFReportGenerator
 
+# Logging
+from app.utils.logger import get_logger
+
+logger = get_logger(__name__)
+
 router = APIRouter()
 
 

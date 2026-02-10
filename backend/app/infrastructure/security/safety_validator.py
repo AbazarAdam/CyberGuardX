@@ -136,8 +136,8 @@ class TargetValidator:
             parsed = urlparse(url)
             domain = parsed.netloc.split(':')[0]  # Remove port
             
-            # Check if domain is in whitelist (use endswith to prevent
-            # bypass via subdomains like "example.com.evil.com")
+            # Check if domain is in whitelist (exact match or proper subdomain)
+            # Prevents bypass like "example.com.evil.com"
             if any(domain == allowed or domain.endswith("." + allowed) for allowed in cls.ALLOWED_TEST_DOMAINS):
                 return True, None
             
@@ -184,7 +184,7 @@ class TargetValidator:
         parsed = urlparse(url)
         domain = parsed.netloc.split(':')[0]
         
-        # Whitelisted domains don't require all confirmations
+        # Whitelisted domains don't require all confirmations (exact match or proper subdomain)
         if any(domain == allowed or domain.endswith("." + allowed) for allowed in TargetValidator.ALLOWED_TEST_DOMAINS):
             if not confirmed_permission:
                 return False, "You must acknowledge scanning terms even for test domains"

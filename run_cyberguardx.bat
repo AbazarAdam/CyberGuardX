@@ -4,9 +4,24 @@ REM This script starts the backend (FastAPI) and frontend (static server).
 
 cd /d "%~dp0"
 
+echo.
+echo ═══════════════════════════════════════════════════════
+echo    🛡️  CyberGuardX — Security Analysis Platform
+echo ═══════════════════════════════════════════════════════
+echo.
+
 REM Activate virtual environment if available
 if exist ".venv\Scripts\activate.bat" (
+    echo Activating virtual environment...
     call ".venv\Scripts\activate.bat"
+)
+
+REM Check and install dependencies if needed
+echo Checking dependencies...
+python -c "import pydantic.networks" >nul 2>&1
+if errorlevel 1 (
+    echo Installing missing dependencies...
+    pip install "pydantic[email]" >nul 2>&1
 )
 
 REM Start backend API server on port 8000

@@ -25,6 +25,11 @@ from app.presentation.routes import email, url, password, scanner, history
 # ── Configuration ────────────────────────────────────────────────────
 from app.config import CORS_ORIGINS
 
+# ── Logging ──────────────────────────────────────────────────────────
+from app.utils.logger import get_logger
+
+logger = get_logger(__name__)
+
 # =====================================================================
 # Application factory
 # =====================================================================
@@ -57,11 +62,13 @@ app.include_router(history.router,  tags=["History"])
 
 # ── Create database tables (idempotent) ─────────────────────────────
 Base.metadata.create_all(bind=engine)
+logger.info("Database tables initialized")
 
 
 # ── Health-check ─────────────────────────────────────────────────────
 @app.get("/", tags=["Health"])
 def root():
     """Simple health-check endpoint."""
+    logger.debug("Health check requested")
     return {"project": "CyberGuardX", "version": "2.0.0", "status": "running"}
 

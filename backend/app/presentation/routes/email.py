@@ -18,6 +18,9 @@ from app.presentation.dependencies import get_db
 from app.domain.risk_engine import calculate_risk_level
 from app.infrastructure.database.models import ScanHistory
 from app.application.services.breach_checker import get_breach_checker
+from app.utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 router = APIRouter()
 
@@ -69,7 +72,7 @@ def check_email(payload: EmailCheckRequest, db: Session = Depends(get_db)):
             db.commit()
         except Exception as exc:
             db.rollback()
-            print(f"Warning: failed to save email scan record: {exc}")
+            logger.warning(f"Failed to save email scan record: {exc}")
 
         return EmailCheckResponse(
             email=payload.email,
@@ -84,5 +87,5 @@ def check_email(payload: EmailCheckRequest, db: Session = Depends(get_db)):
         )
 
     except Exception as exc:
-        print(f"Error in /check-email: {exc}")
+        logger.error(f"Error in /check-email endpoint: {exc}", exc_info=True)
         raise HTTPException(status_code=500, detail="Email breach check failed")

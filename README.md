@@ -6,6 +6,19 @@
 
 ## Quick Start (3 Steps)
 
+### Option A: Docker (Recommended)
+```powershell
+# Start all services with Docker
+docker-compose up
+
+# Access:
+# Frontend: http://localhost:3000
+# Backend API: http://localhost:8000/docs
+```
+📖 **See [DOCKER_GUIDE.md](DOCKER_GUIDE.md) for full Docker documentation**
+
+### Option B: Manual Setup
+
 ### 1. Start Backend
 ```powershell
 cd backend
@@ -148,6 +161,12 @@ CyberGuardX/
 ├── README.md                                # This file
 ├── FYP_REPORT.md                            # Academic report
 ├── TECHNICAL_DOCS.md                        # Technical documentation
+├── TECH_STACK_EVALUATION.md                 # Technology analysis & recommendations ⭐
+├── TECH_STACK_QUICK_REFERENCE.md            # Tech decisions quick reference ⭐
+├── ARCHITECTURE_EVOLUTION.md                # Architecture progression diagrams ⭐
+├── DOCKER_GUIDE.md                          # Docker deployment guide
+├── DEPLOYMENT_COMPLETE.md                   # Deployment status & checklist
+├── START_HERE.md                            # Quick start guide
 └── CHANGELOG.md                             # Version history & bug fixes
 ```
 
@@ -169,6 +188,57 @@ CyberGuardX/
 | GET | `/scan-progress/{scan_id}` | Real-time scan progress |
 | POST | `/scan-progress/{scan_id}/cancel` | Cancel running scan |
 | GET | `/` | Health check |
+
+---
+
+## 🐳 Docker Deployment
+
+**Production-ready containerized setup:**
+
+```powershell
+# Development
+docker-compose up
+
+# Production
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+```
+
+Full documentation: **[DOCKER_GUIDE.md](DOCKER_GUIDE.md)**
+
+---
+
+## 🤖 CI/CD Pipeline
+
+Automated testing and deployment via GitHub Actions:
+- ✅ Code quality checks (flake8, black, mypy)
+- ✅ Security scanning (Bandit, Safety)
+- ✅ Docker image building
+- ✅ Automatic deployment on `main` branch
+
+Pipeline configuration: **[.github/workflows/ci-cd.yml](.github/workflows/ci-cd.yml)**
+
+---
+
+## 📊 Architecture & Technology Stack
+
+Comprehensive evaluation of tech choices, scalability analysis, and upgrade recommendations:
+
+- **🔬 Complete Tech Stack Evaluation** → [TECH_STACK_EVALUATION.md](TECH_STACK_EVALUATION.md)  
+  In-depth analysis of all technologies with industry best practices comparison
+  
+- **⚡ Quick Reference Guide** → [TECH_STACK_QUICK_REFERENCE.md](TECH_STACK_QUICK_REFERENCE.md)  
+  Component scorecard, priority upgrades, and decision matrix
+
+- **🏗️ Architecture Evolution** → [ARCHITECTURE_EVOLUTION.md](ARCHITECTURE_EVOLUTION.md)  
+  Visual diagrams showing system architecture progression (prototype → enterprise)
+
+**Current Grade:** B+ (73/100) | **Production Readiness:** 68% → Target: 92%
+
+**Critical Upgrades for Production:**
+1. 🔴 SQLite → PostgreSQL (enables 10,000+ users)
+2. 🟠 Add Redis for distributed caching
+3. 🟠 Vanilla JS → React + TypeScript (maintainability)
+4. 🟠 Logistic Regression → XGBoost (92-95% accuracy)
 
 ---
 

@@ -30,6 +30,9 @@ from app.infrastructure.ml.feature_extractor import (
     explain_features,
     get_feature_names,
 )
+from app.utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 router = APIRouter()
 

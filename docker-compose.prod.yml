@@ -1,0 +1,41 @@
+# =============================================================================
+# CyberGuardX — Production Docker Compose Override
+# =============================================================================
+# Production-specific configuration
+#
+# Usage:
+#   docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+version: '3.8'
+
+services:
+  backend:
+    # Production: no source code mounting (use image)
+    volumes:
+      - ./data:/app/data:ro
+      - ./models:/app/models:ro
+      - cyberguardx-db:/app/database
+      - cyberguardx-logs:/app/logs
+    environment:
+      - DEBUG=False
+      - LOG_LEVEL=WARNING
+    # Production: more workers
+    command: ["uvicorn", "backend.app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "8"]
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '1.0'
+          memory: 1G
+
+  frontend:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M

@@ -19,6 +19,9 @@ from typing import Dict, List, Optional
 
 from app.config import BREACH_DB_PATH
 from app.utils.hashing import hash_email          # single source of truth
+from app.utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class BreachCheckerService:
@@ -38,9 +41,9 @@ class BreachCheckerService:
     def _ensure_database_exists(self) -> None:
         """Warn (but don't crash) if the breach DB hasn't been generated yet."""
         if not self.db_path.exists():
-            print(
-                f"⚠️  Breach database not found at {self.db_path}\n"
-                f"   Run:  python -m scripts.generate_breach_db --size 100000"
+            logger.warning(
+                f"Breach database not found at {self.db_path}. "
+                f"Run: python -m scripts.generate_breach_db --size 100000"
             )
 
     # ------------------------------------------------------------------
@@ -89,7 +92,7 @@ class BreachCheckerService:
                 }
             return None
         except Exception as exc:
-            print(f"Database query error: {exc}")
+            logger.error(f"Database query error: {exc}", exc_info=True)
             return None
 
     # ------------------------------------------------------------------
