@@ -1,0 +1,295 @@
+/**
+ * ML Explainability Enhancements for CyberGuardX
+ * Styling for feature analysis, model info, and recommendations
+ */
+
+/* ML Explainability Section */
+.ml-explainability-section {
+    margin-top: 25px;
+    padding: 20px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 2px solid #00f3ff;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+}
+
+.ml-explainability-section h4 {
+    color: #00f3ff;
+    margin: 0 0 20px 0;
+    font-size: 1.3em;
+    text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+}
+
+.ml-explainability-section h5 {
+    color: #00ff9d;
+    margin: 15px 0 10px 0;
+    font-size: 1.1em;
+}
+
+/* Model Info */
+.model-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: rgba(0, 243, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(0, 243, 255, 0.2);
+}
+
+.model-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.model-info-item .label {
+    color: #999;
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.model-info-item .value {
+    color: #fff;
+    font-size: 1.1em;
+    font-weight: 600;
+}
+
+.confidence-highlight {
+    color: #00ff9d !important;
+    text-shadow: 0 0 8px rgba(0, 255, 157, 0.5);
+}
+
+/* Feature Analysis */
+.feature-analysis {
+    margin: 20px 0;
+}
+
+.feature-item {
+    margin: 15px 0;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.03);
+    border-left: 4px solid #00f3ff;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.feature-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateX(5px);
+    box-shadow: 0 4px 12px rgba(0, 243, 255, 0.15);
+}
+
+.feature-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.feature-name {
+    font-weight: 600;
+    color: #fff;
+    font-size: 1.05em;
+}
+
+.feature-impact {
+    padding: 4px 10px;
+    background: rgba(0, 243, 255, 0.2);
+    border-radius: 4px;
+    font-size: 0.9em;
+    color: #00f3ff;
+    font-family: 'Courier New', monospace;
+}
+
+.feature-value {
+    color: #ccc;
+    font-size: 0.9em;
+    margin-bottom: 8px;
+    font-family: 'Courier New', monospace;
+}
+
+.feature-explanation {
+    color: #999;
+    font-size: 0.95em;
+    font-style: italic;
+    line-height: 1.5;
+    padding-left: 10px;
+    border-left: 2px solid rgba(0, 243, 255, 0.3);
+}
+
+/* Risk Badges - Enhanced */
+.risk-badge {
+    padding: 5px 12px;
+    border-radius: 5px;
+    font-weight: 600;
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.risk-badge.risk-critical {
+    background: #ff003c;
+    color: white;
+    box-shadow: 0 0 15px rgba(255, 0, 60, 0.5);
+    animation: pulse-critical 2s ease-in-out infinite;
+}
+
+.risk-badge.risk-high {
+    background: #ff8c00;
+    color: white;
+    box-shadow: 0 0 12px rgba(255, 140, 0, 0.4);
+}
+
+.risk-badge.risk-medium {
+    background: #ffd700;
+    color: #000;
+}
+
+.risk-badge.risk-low {
+    background: #00ff9d;
+    color: #000;
+}
+
+@keyframes pulse-critical {
+    0%, 100% {
+        box-shadow: 0 0 15px rgba(255, 0, 60, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 25px rgba(255, 0, 60, 0.8);
+    }
+}
+
+/* ML Recommendations */
+.ml-recommendations {
+    margin-top: 20px;
+    padding: 20px;
+    background: rgba(0, 255, 157, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(0, 255, 157, 0.2);
+}
+
+.ml-recommendations h5 {
+    color: #00ff9d;
+    margin: 0 0 15px 0;
+}
+
+.ml-recommendations ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ml-recommendations li {
+    padding: 12px;
+    margin: 8px 0;
+    background: rgba(0, 255, 157, 0.03);
+    border-left: 3px solid #00ff9d;
+    border-radius: 4px;
+    color: #ddd;
+    transition: all 0.2s ease;
+}
+
+.ml-recommendations li:hover {
+    background: rgba(0, 255, 157, 0.08);
+    transform: translateX(5px);
+}
+
+.ml-recommendations li:before {
+    content: '→ ';
+    color: #00ff9d;
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+/* Confidence Bar Enhancements */
+.confidence-bar {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0;
+    position: relative;
+}
+
+.confidence-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 1s ease, background 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.confidence-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.3), 
+        transparent
+    );
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+.confidence-fill.confidence-high {
+    background: linear-gradient(90deg, #ff003c, #ff4757);
+}
+
+.confidence-fill.confidence-medium {
+    background: linear-gradient(90deg, #ff8c00, #ffa726);
+}
+
+.confidence-fill.confidence-low {
+    background: linear-gradient(90deg, #00ff9d, #00d084);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .ml-explainability-section {
+        padding: 15px;
+    }
+    
+    .model-info {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .feature-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .feature-item {
+        padding: 12px;
+    }
+    
+    .ml-recommendations {
+        padding: 15px;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .ml-explainability-section {
+        border-color: #000;
+        box-shadow: none;
+    }
+    
+    .risk-badge {
+        border: 1px solid #000;
+    }
+}

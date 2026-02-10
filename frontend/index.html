@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberGuardX – Phishing & Breach Detection</title>
+    <link rel="stylesheet" href="style-cyberpunk.css">
+    <link rel="stylesheet" href="components/ScanProgress.css">
+    <link rel="stylesheet" href="style-ml-enhancements.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🛡️ CyberGuardX</h1>
+            <p class="subtitle">Intelligent Web Security Assessment Platform</p>
+        </header>
+
+        <main>
+            <section class="card">
+                <h2>Email Breach Detection</h2>
+                <p class="description">Check if an email address has been compromised in known data breaches.</p>
+                <div class="input-group">
+                    <input 
+                        type="email" 
+                        id="emailInput" 
+                        placeholder="Enter email address (e.g., user@example.com)"
+                        autocomplete="off"
+                    >
+                    <button id="checkEmailBtn" class="btn btn-primary">
+                        Check Email
+                    </button>
+                </div>
+                <div id="emailResult" class="result-container"></div>
+            </section>
+
+            <section class="card">
+                <h2>Phishing URL Detection</h2>
+                <p class="description">Analyze URLs using machine learning to detect potential phishing attempts.</p>
+                <div class="input-group">
+                    <input 
+                        type="text" 
+                        id="urlInput" 
+                        placeholder="Enter URL (e.g., http://example.com)"
+                        autocomplete="off"
+                    >
+                    <button id="checkUrlBtn" class="btn btn-primary">
+                        Check URL
+                    </button>
+                </div>
+                <div id="urlResult" class="result-container"></div>
+            </section>
+
+            <!-- PASSWORD STRENGTH ANALYZER -->
+            <section class="card">
+                <h2>🔐 Password Strength Analyzer</h2>
+                <p class="description">Analyze password strength with entropy calculation, pattern detection, and breach database checking.</p>
+                <div class="input-group">
+                    <input 
+                        type="text" 
+                        id="passwordInput" 
+                        placeholder="Enter a password to analyze"
+                        autocomplete="off"
+                    >
+                    <button id="checkPasswordBtn" class="btn btn-primary">
+                        Analyze
+                    </button>
+                </div>
+                <div class="password-tools">
+                    <button id="generatePasswordBtn" class="btn btn-secondary btn-small">
+                        🎲 Generate Random
+                    </button>
+                    <button id="generatePassphraseBtn" class="btn btn-secondary btn-small">
+                        📝 Generate Passphrase
+                    </button>
+                    <label class="checkbox-label" style="margin-left: 12px;">
+                        <input type="checkbox" id="showPassword" checked>
+                        <span>Show password</span>
+                    </label>
+                </div>
+                <div id="passwordResult" class="result-container"></div>
+            </section>
+
+            <section class="card">
+                <h2>🔍 Website Security Scanner</h2>
+                <p class="description">Professional-grade security assessment with deep vulnerability analysis, compliance mapping, and remediation guidance.</p>
+                
+                <div class="legal-disclaimer">
+                    <div class="disclaimer-header">⚖️ Legal Disclaimer - Read Carefully</div>
+                    <div class="disclaimer-content">
+                        <p><strong>IMPORTANT:</strong> Only scan websites you own or have explicit written permission to assess. 
+                        Unauthorized scanning may violate computer fraud and abuse laws.</p>
+                        
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="confirmPermission">
+                            <span>I confirm I have permission to scan this website</span>
+                        </label>
+                        
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="confirmOwner">
+                            <span>I am the owner or have written authorization</span>
+                        </label>
+                        
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="confirmLegal">
+                            <span>I accept full legal responsibility for this scan</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <input 
+                        type="text" 
+                        id="websiteInput" 
+                        placeholder="Enter website URL (e.g., https://example.com)"
+                        autocomplete="off"
+                    >
+                    <button id="scanWebsiteBtn" class="btn btn-primary">
+                        Scan Website
+                    </button>
+                </div>
+                <!-- Real-time Progress Tracker -->
+                <div id="websiteScanProgress" style="display:none; margin-top: 20px;"></div>
+                <div id="websiteResult" class="result-container"></div>
+            </section>
+
+            <section class="card history-card">
+                <h2>Recent Scans</h2>
+                <p class="description">View the most recent security scans performed on this system.</p>
+                <button id="loadHistoryBtn" class="btn btn-secondary">
+                    Load Scan History
+                </button>
+                <div id="historyResult" class="history-container"></div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 CyberGuardX | Final Year Project | Academic Research</p>
+        </footer>
+    </div>
+
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <p>Processing request...</p>
+    </div>
+
+    <script src="components/ScanProgress.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

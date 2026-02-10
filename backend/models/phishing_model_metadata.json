@@ -1,0 +1,51 @@
+{
+  "model_name": "Logistic Regression",
+  "model_version": "2.0",
+  "trained_at": "2026-02-08T16:49:55.369068",
+  "dataset_size": 1000,
+  "train_size": 800,
+  "test_size": 200,
+  "num_features": 10,
+  "feature_names": [
+    "url_length",
+    "num_dots",
+    "num_hyphens",
+    "num_digits",
+    "has_at",
+    "has_https",
+    "domain_age",
+    "ssl_valid",
+    "path_length",
+    "special_char_ratio"
+  ],
+  "feature_importance": {
+    "url_length": 0.30525218960553635,
+    "num_hyphens": 0.14008927313921138,
+    "has_https": 0.13894956207889173,
+    "domain_age": 0.13894956207889173,
+    "ssl_valid": 0.13894956207889173,
+    "num_dots": 0.13780985101857712,
+    "num_digits": 0.0,
+    "has_at": 0.0,
+    "path_length": 0.0,
+    "special_char_ratio": 0.0
+  },
+  "metrics": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1_score": 1.0
+  },
+  "lr_metrics": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1_score": 1.0
+  },
+  "rf_metrics": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1_score": 1.0
+  }
+}
