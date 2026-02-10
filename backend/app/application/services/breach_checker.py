@@ -19,6 +19,7 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 from app.config import BREACH_DB_PATH
+from app.infrastructure.cache import get_cache
 from app.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -36,9 +37,9 @@ class BreachCheckerService:
     def __init__(self):
         self.db_path = BREACH_DB_PATH
         self._ensure_database_exists()
-        # Simple bounded cache (last 1 000 queries kept in memory)
-        self._cache: Dict[str, Dict] = {}
-        self._cache_size = 1_000
+        # Redis cache for distributed caching
+        self.cache = get_cache()
+        logger.info("BreachCheckerService initialized with Redis cache")
 
     # ------------------------------------------------------------------
     # Database bootstrap
@@ -57,13 +58,12 @@ class BreachCheckerService:
     # ------------------------------------------------------------------
 
     def _get_from_cache(self, email_hash: str) -> Optional[Dict]:
-        return self._cache.get(email_hash)
+        """Retrieve from Redis cache."""
+        return self.cache.get(f"breach:{email_hash}")
 
     def _add_to_cache(self, email_hash: str, data: Dict) -> None:
-        if len(self._cache) >= self._cache_size:
-            # Evict the oldest entry (insertion-order dict since Python 3.7)
-            self._cache.pop(next(iter(self._cache)))
-        self._cache[email_hash] = data
+        """Store in Redis cache with 24h TTL."""
+        self.cache.set(f"breach:{email_hash}", data, ttl=86400)
 
     # ------------------------------------------------------------------
     # SQLite queries

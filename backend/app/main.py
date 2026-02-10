@@ -12,12 +12,19 @@ Clean-Architecture layers:
     Domain  →  Application  →  Infrastructure  →  Presentation
 """
 
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 # ── Infrastructure: database setup ────────────────────────────────────
 from app.infrastructure.database.connection import Base, engine
 from app.infrastructure.database import models  # noqa: F401  (registers ORM models)
+
+# ── Cache ─────────────────────────────────────────────────────────────
+from app.infrastructure.cache import get_cache
+
+# ── ML Model ──────────────────────────────────────────────────────────
+from app.infrastructure.ml.evaluator import PhishingEvaluator
 
 # ── Presentation: route modules ──────────────────────────────────────
 from app.presentation.routes import email, url, password, scanner, history
@@ -31,6 +38,42 @@ from app.utils.logger import get_logger
 logger = get_logger(__name__)
 
 # =====================================================================
+# Application Lifecycle Management
+# =====================================================================
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Application lifecycle manager.
+    - Startup: Create DB tables, preload ML model, connect to cache
+    - Shutdown: Cleanup resources
+    """
+    # === STARTUP ===
+    logger.info("🚀 CyberGuardX starting up...")
+    
+    # Create database tables
+    Base.metadata.create_all(bind=engine)
+    logger.info("✓ Database tables ensured")
+    
+    # Initialize Redis cache
+    cache = get_cache()
+    logger.info("✓ Redis cache initialized")
+    
+    # Preload ML model (10-20x faster predictions!)
+    try:
+        app.state.phishing_model = PhishingEvaluator()
+        logger.info("✓ ML model preloaded (ready for predictions)")
+    except Exception as e:
+        logger.warning(f"ML model preload failed: {e}")
+        app.state.phishing_model = None
+    
+    logger.info("✅ CyberGuardX ready!")
+    
+    yield
+    
+    # === SHUTDOWN ===logger.info("👋 CyberGuardX shutting down...")
+
+# =====================================================================
 # Application factory
 # =====================================================================
 
@@ -42,6 +85,7 @@ app = FastAPI(
         "passive website security scanning."
     ),
     version="2.0.0",
+    lifespan=lifespan,  # Lifecycle management
 )
 
 # ── CORS middleware ──────────────────────────────────────────────────

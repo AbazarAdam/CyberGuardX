@@ -22,13 +22,21 @@ router = APIRouter()
 # ──────────────────────────────────────────────────────────────────────────
 
 @router.get("/scan-history", response_model=List[ScanHistoryResponse])
-def get_scan_history(db: Session = Depends(get_db)):
+def get_scan_history(
+    skip: int = 0,
+    limit: int = 20,
+    db: Session = Depends(get_db)
+):
     """
-    Retrieve the last 50 email / URL scan records ordered newest-first.
-
-    URL-only scans (where ``email == 'URL_SCAN'``) are relabelled as
-    *"URL Check"* for readability in the frontend.
+    Retrieve scan history with pagination (default: 20 per page).
+    
+    Query params:
+        - skip: Number of records to skip (default: 0)
+        - limit: Number of records to return (default: 20, max: 100)
     """
+    # Enforce maximum limit
+    limit = min(limit, 100)
+    
     try:
         records = (
             db.query(
@@ -40,7 +48,8 @@ def get_scan_history(db: Session = Depends(get_db)):
                 ScanHistory.scanned_at,
             )
             .order_by(ScanHistory.scanned_at.desc())
-            .limit(50)
+            .offset(skip)
+            .limit(limit)
             .all()
         )
 

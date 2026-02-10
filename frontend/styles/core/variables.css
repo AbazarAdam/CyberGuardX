@@ -1,0 +1,32 @@
+/* CSS Custom Properties - Cyberpunk Theme Variables */
+
+:root {
+    /* Cyberpunk Color Palette */
+    --cyber-primary: #00f3ff;      /* Electric Cyan */
+    --cyber-secondary: #ff00ff;    /* Neon Magenta */
+    --cyber-accent: #00ff9d;       /* Bright Green */
+    --cyber-danger: #ff003c;       /* Hot Pink */
+    --cyber-warning: #ffbd00;      /* Electric Yellow */
+    --cyber-success: #39ff14;      /* Neon Green */
+    
+    /* Dark Background Layers */
+    --bg-primary: #0a0e27;         /* Deep Space Blue */
+    --bg-secondary: #121838;       /* Midnight Blue */
+    --bg-tertiary: #1a1f3a;        /* Dark Slate */
+    --bg-card: #16213e;            /* Card Background */
+    
+    /* Glass Effects */
+    --glass-bg: rgba(26, 31, 58, 0.7);
+    --glass-border: rgba(0, 243, 255, 0.2);
+    
+    /* Text Colors */
+    --text-primary: #e0e7ff;
+    --text-secondary: #9ca3af;
+    --text-muted: #6b7280;
+    
+    /* Shadows & Glows */
+    --glow-primary: 0 0 20px rgba(0, 243, 255, 0.5);
+    --glow-secondary: 0 0 20px rgba(255, 0, 255, 0.5);
+    --glow-accent: 0 0 20px rgba(0, 255, 157, 0.5);
+    --glow-danger: 0 0 20px rgba(255, 0, 60, 0.5);
+}

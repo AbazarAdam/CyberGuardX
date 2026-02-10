@@ -5,6 +5,7 @@ All application-wide settings live here for easy modification.
 Change database URLs, CORS origins, rate-limit windows, etc. in one place.
 """
 
+import os
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
@@ -15,9 +16,21 @@ DATA_DIR = BASE_DIR / "data"
 MODELS_DIR = BASE_DIR / "models"
 
 # ---------------------------------------------------------------------------
-# Database
+# Database — PostgreSQL (production) or SQLite (development)
 # ---------------------------------------------------------------------------
-DATABASE_URL = "sqlite:///./cyberguardx.db"
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    "postgresql://cyberguardx:cyberguardx_secure_2026@localhost:5432/cyberguardx"
+    # Fallback to SQLite for development: "sqlite:///./cyberguardx.db"
+)
+
+# ---------------------------------------------------------------------------
+# Redis Cache
+# ---------------------------------------------------------------------------
+REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
+REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
+REDIS_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}"
+CACHE_TTL = 86400  # 24 hours
 
 # ---------------------------------------------------------------------------
 # CORS — allowed frontend origins

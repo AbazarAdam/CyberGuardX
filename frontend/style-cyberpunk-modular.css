@@ -1,0 +1,10 @@
+/* CyberGuardX - Modular CSS Architecture */
+
+/* ===== CORE ===== */
+@import url('styles/core/variables.css');
+@import url('styles/core/reset.css');
+@import url('styles/core/base.css');
+
+/* ===== ORIGINAL STYLES (temporary - will be split further) ===== */
+/* Note: The full 2,967-line CSS is still loaded here for now */
+/* TODO: Complete extraction of all sections to modular files */

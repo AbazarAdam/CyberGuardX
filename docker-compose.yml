@@ -13,6 +13,50 @@ version: '3.8'
 
 services:
   # ───────────────────────────────────────────────────────────────────────────
+  # PostgreSQL Database
+  # ───────────────────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: cyberguardx-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-cyberguardx}
+      POSTGRES_USER: ${POSTGRES_USER:-cyberguardx}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cyberguardx_secure_2026}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./backend/scripts/init_db.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - cyberguardx-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cyberguardx"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ───────────────────────────────────────────────────────────────────────────
+  # Redis Cache
+  # ───────────────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: cyberguardx-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - cyberguardx-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # ───────────────────────────────────────────────────────────────────────────
   # Backend API Service (FastAPI)
   # ───────────────────────────────────────────────────────────────────────────
   backend:
@@ -33,11 +77,18 @@ services:
       # Logs
       - cyberguardx-logs:/app/logs
     environment:
-      - DATABASE_URL=${DATABASE_URL:-sqlite:///./database/cyberguardx.db}
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-cyberguardx}:${POSTGRES_PASSWORD:-cyberguardx_secure_2026}@postgres:5432/${POSTGRES_DB:-cyberguardx}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000}
       - RATE_LIMIT_WINDOW_SECONDS=${RATE_LIMIT_WINDOW_SECONDS:-600}
       - DEBUG=${DEBUG:-False}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     networks:
       - cyberguardx-network
     healthcheck:
@@ -75,6 +126,12 @@ services:
 # ═════════════════════════════════════════════════════════════════════════════
 networks:
   cyberguardx-network:
+  postgres-data:
+    name: cyberguardx-postgres-data
+    driver: local
+  redis-data:
+    name: cyberguardx-redis-data
+    driver: local
     driver: bridge
     name: cyberguardx-network
 
