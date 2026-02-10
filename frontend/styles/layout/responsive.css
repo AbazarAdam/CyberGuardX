@@ -1,0 +1,82 @@
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+@media (max-width: 768px) {
+    body {
+        padding: 15px;
+    }
+    
+    header {
+        padding: 40px 20px;
+        margin-bottom: 40px;
+    }
+    
+    header h1 {
+        font-size: 2.5rem;
+    }
+    
+    .subtitle {
+        font-size: 1rem;
+    }
+    
+    main {
+        gap: 30px;
+    }
+    
+    .input-group {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .card {
+        padding: 30px 25px;
+    }
+    
+    .card h2 {
+        font-size: 1.5rem;
+        margin-bottom: 14px;
+    }
+    
+    .description {
+        margin-bottom: 25px;
+    }
+    
+    .overall-grade {
+        flex-direction: column;
+        text-align: center;
+        gap: 25px;
+        padding: 25px;
+    }
+    
+    .grade-display {
+        font-size: 3rem;
+        width: 100px;
+        height: 100px;
+    }
+    
+    .component-grades {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    
+    .issues-summary {
+        flex-direction: column;
+        gap: 20px;
+        padding: 25px;
+    }
+    
+    .result-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .result-container {
+        padding: 25px;
+    }
+    
+    .btn {
+        width: 100%;
+        padding: 14px 24px;
+    }
+}

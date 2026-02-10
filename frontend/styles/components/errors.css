@@ -1,0 +1,22 @@
+    animation: slideIn 0.4s ease;
+}
+
+.history-container.show {
+    display: block;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 20px;
+    overflow: hidden;
+    border-radius: 14px;
+    box-shadow: 
+        0 8px 25px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(0, 243, 255, 0.2);
+}
+
+.history-table th {
+    background: linear-gradient(135deg, rgba(0, 243, 255, 0.25), rgba(255, 0, 255, 0.25));
+    padding: 18px 20px;

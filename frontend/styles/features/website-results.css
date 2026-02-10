@@ -1,0 +1,474 @@
+/* ============================================================
+   ENHANCED WEBSITE SCANNER - VULNERABILITY DISPLAY STYLES
+   ============================================================ */
+
+.scan-summary {
+    padding: 5px 0;
+}
+
+.scan-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.scan-header h3 {
+    margin: 0;
+    color: var(--cyber-primary);
+    font-size: 1.3rem;
+}
+
+.scan-duration {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-family: 'Orbitron', monospace;
+}
+
+.overall-grade {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    margin-bottom: 20px;
+}
+
+.grade-display {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 2.2rem;
+    font-weight: 900;
+    font-family: 'Orbitron', monospace;
+    border: 3px solid;
+    flex-shrink: 0;
+}
+
+.grade-display.grade-a { color: #000; border-color: #00ff9d; text-shadow: none; }
+.grade-display.grade-b { color: #000; border-color: #00f3ff; text-shadow: none; }
+.grade-display.grade-c { color: #000; border-color: #ffaa00; text-shadow: none; }
+.grade-display.grade-d { color: #000; border-color: #ff6600; text-shadow: none; }
+.grade-display.grade-f { color: #000; border-color: #ff003c; text-shadow: none; }
+
+.grade-details {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.grade-item {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+}
+
+.component-grades {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.component-grade {
+    text-align: center;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.component-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+}
+
+.grade-badge {
+    font-size: 1.4rem;
+    font-weight: 800;
+    font-family: 'Orbitron', monospace;
+}
+
+.grade-badge.grade-a { color: #000; }
+.grade-badge.grade-b { color: #000; }
+.grade-badge.grade-c { color: #000; }
+.grade-badge.grade-d { color: #000; }
+.grade-badge.grade-f { color: #000; }
+
+.issues-summary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.issue-count {
+    text-align: center;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid;
+}
+
+.issue-count .count {
+    display: block;
+    font-size: 1.8rem;
+    font-weight: 800;
+    font-family: 'Orbitron', monospace;
+}
+
+.issue-count .label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.issue-count.critical { border-color: #ff003c; color: #ff003c; background: rgba(255, 0, 60, 0.08); }
+.issue-count.high { border-color: #ff6600; color: #ff6600; background: rgba(255, 102, 0, 0.08); }
+.issue-count.medium { border-color: #ffaa00; color: #ffaa00; background: rgba(255, 170, 0, 0.08); }
+.issue-count.low { border-color: #00ff9d; color: #00ff9d; background: rgba(0, 255, 157, 0.08); }
+
+/* WAF Detection */
+.waf-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    border-left: 4px solid;
+}
+
+.waf-status.protected {
+    background: rgba(0, 255, 157, 0.08);
+    border-color: #00ff9d;
+    color: #00ff9d;
+}
+
+.waf-status.unprotected {
+    background: rgba(255, 170, 0, 0.08);
+    border-color: #ffaa00;
+    color: #ffaa00;
+}
+
+.waf-icon { font-size: 1.3rem; }
+
+/* Security Scorecard */
+.security-scorecard {
+    margin-bottom: 20px;
+}
+
+.security-scorecard h4 {
+    margin: 0 0 12px;
+    color: var(--text-primary);
+}
+
+.scorecard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+}
+
+.scorecard-item {
+    text-align: center;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sc-grade {
+    font-size: 1.6rem;
+    font-weight: 800;
+    font-family: 'Orbitron', monospace;
+}
+
+.sc-score {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin: 4px 0;
+}
+
+.sc-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Priority Timeline */
+.priority-timeline {
+    margin-bottom: 20px;
+}
+
+.priority-timeline h4 {
+    margin: 0 0 12px;
+    color: var(--text-primary);
+}
+
+.priority-group {
+    margin-bottom: 12px;
+}
+
+.priority-label {
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.priority-label.priority-immediate { color: #ff003c; background: rgba(255, 0, 60, 0.15); }
+.priority-label.priority-24h { color: #ff6600; background: rgba(255, 102, 0, 0.15); }
+.priority-label.priority-7d { color: #ffaa00; background: rgba(255, 170, 0, 0.15); }
+.priority-label.priority-30d { color: #00f3ff; background: rgba(0, 243, 255, 0.15); }
+
+.priority-item {
+    padding: 8px 12px;
+    margin: 4px 0 4px 10px;
+    border-left: 2px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+/* Vulnerability Cards */
+.vuln-findings {
+    margin-bottom: 20px;
+}
+
+.vuln-findings h4 {
+    margin: 0 0 12px;
+    color: var(--text-primary);
+}
+
+.vuln-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.vuln-card:hover {
+    border-color: var(--cyber-primary);
+    box-shadow: 0 0 10px rgba(0, 243, 255, 0.1);
+}
+
+.vuln-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+}
+
+.vuln-title {
+    flex: 1;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.vuln-cvss {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-family: 'Orbitron', monospace;
+}
+
+.vuln-expand-icon {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    transition: transform 0.3s ease;
+}
+
+.vuln-card.expanded .vuln-expand-icon {
+    transform: rotate(180deg);
+}
+
+.vuln-card-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.3s ease;
+    padding: 0 16px;
+}
+
+.vuln-card.expanded .vuln-card-body {
+    max-height: 1200px;
+    padding: 0 16px 16px;
+}
+
+.vuln-meta-row {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.vuln-explanation {
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.vuln-example {
+    margin-bottom: 10px;
+    padding: 10px;
+    background: rgba(255, 170, 0, 0.06);
+    border-radius: 6px;
+    border-left: 3px solid #ffaa00;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.vuln-fix {
+    margin-bottom: 10px;
+}
+
+.fix-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.fix-tab {
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.fix-tab-label {
+    padding: 4px 10px;
+    background: rgba(0, 243, 255, 0.15);
+    color: var(--cyber-primary);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.fix-code {
+    margin: 0;
+    padding: 10px 12px;
+    background: rgba(0, 0, 0, 0.4);
+    color: #e0e0e0;
+    font-size: 0.8rem;
+    font-family: 'Fira Code', 'Consolas', monospace;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.vuln-compliance {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Compliance Section */
+.compliance-section {
+    margin-bottom: 20px;
+}
+
+.compliance-section h4 {
+    margin: 0 0 12px;
+    color: var(--text-primary);
+}
+
+.compliance-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 8px;
+}
+
+.compliance-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    border: 1px solid;
+}
+
+.compliance-item.compliant {
+    border-color: rgba(0, 255, 157, 0.3);
+    background: rgba(0, 255, 157, 0.05);
+    color: #00ff9d;
+}
+
+.compliance-item.non-compliant {
+    border-color: rgba(255, 0, 60, 0.3);
+    background: rgba(255, 0, 60, 0.05);
+    color: #ff003c;
+}
+
+.compliance-violations {
+    margin-left: auto;
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
+/* OWASP Compliance */
+.owasp-compliance {
+    margin-bottom: 20px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.owasp-compliance h4 {
+    margin: 0 0 8px;
+    color: var(--text-primary);
+}
+
+.compliance-score {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.compliance-score strong {
+    color: var(--cyber-primary);
+    font-family: 'Orbitron', monospace;
+}
+
+/* Report Actions */
+.report-actions {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.report-actions .btn {
+    padding: 12px 32px;
+    font-size: 1rem;
+    background: linear-gradient(135deg, var(--cyber-primary), var(--cyber-secondary));
+    border: none;
+    color: #000;
+    font-weight: 700;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.report-actions .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 25px rgba(0, 243, 255, 0.4);
+}
+
+.scan-footer {
+    text-align: center;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+}

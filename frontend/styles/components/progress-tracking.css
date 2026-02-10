@@ -1,0 +1,18 @@
+
+/* ========================================
+   WEBSITE SCAN RESULTS
+   ======================================== */
+.scan-summary {
+    padding: 20px 0;
+}
+
+.scan-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 25px;
+    border-bottom: 2px solid rgba(0, 243, 255, 0.2);
+}
+
+.scan-header h3 {

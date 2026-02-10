@@ -1,10 +1,40 @@
-/* CyberGuardX - Modular CSS Architecture */
+/* ============================================================
+   CyberGuardX - Modular CSS Architecture
+   2,967 lines → 25 organized modules
+   ============================================================ */
 
-/* ===== CORE ===== */
+/* ===== CORE FOUNDATIONS ===== */
 @import url('styles/core/variables.css');
 @import url('styles/core/reset.css');
 @import url('styles/core/base.css');
 
-/* ===== ORIGINAL STYLES (temporary - will be split further) ===== */
-/* Note: The full 2,967-line CSS is still loaded here for now */
-/* TODO: Complete extraction of all sections to modular files */
+/* ===== LAYOUT STRUCTURE ===== */
+@import url('styles/layout/header.css');
+@import url('styles/layout/main.css');
+@import url('styles/layout/footer.css');
+@import url('styles/layout/responsive.css');
+
+/* ===== COMPONENTS (Alphabetical) ===== */
+@import url('styles/components/animations.css');
+@import url('styles/components/badges.css');
+@import url('styles/components/buttons.css');
+@import url('styles/components/cards.css');
+@import url('styles/components/confidence-bars.css');
+@import url('styles/components/disclaimer.css');
+@import url('styles/components/errors.css');
+@import url('styles/components/forms.css');
+@import url('styles/components/hints.css');
+@import url('styles/components/history-table.css');
+@import url('styles/components/loading.css');
+@import url('styles/components/progress-tracking.css');
+@import url('styles/components/result-details.css');
+@import url('styles/components/results.css');
+@import url('styles/components/scrollbar.css');
+@import url('styles/components/validation.css');
+
+/* ===== FEATURE-SPECIFIC STYLES ===== */
+@import url('styles/features/email-checker.css');
+@import url('styles/features/password-analyzer.css');
+@import url('styles/features/website-owasp.css');
+@import url('styles/features/website-results.css');
+@import url('styles/features/website-scanner.css');

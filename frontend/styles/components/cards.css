@@ -1,0 +1,65 @@
+/* ==============================================
+   CARD COMPONENTS - Glassmorphism Design
+   ============================================== */
+
+.card {
+    background: linear-gradient(
+        135deg,
+        rgba(26, 31, 58, 0.9),
+        rgba(10, 10, 10, 0.8)
+    );
+    backdrop-filter: blur(15px);
+    border: 2px solid rgba(0, 243, 255, 0.3);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(
+        45deg,
+        var(--cyber-primary),
+        var(--cyber-secondary),
+        var(--cyber-accent)
+    );
+    border-radius: 20px;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.card:hover::before {
+    opacity: 1;
+    animation: borderGlow 3s linear infinite;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0, 243, 255, 0.4);
+    border-color: var(--cyber-primary);
+}
+
+.card h2 {
+    color: var(--cyber-primary);
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 0 20px rgba(0, 243, 255, 0.6);
+}
+
+.description {
+    color: var(--text-secondary);
+    margin-bottom: 30px;
+    line-height: 1.8;
+    font-size: 1.05rem;
+}

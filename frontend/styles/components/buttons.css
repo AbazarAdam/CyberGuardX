@@ -1,0 +1,142 @@
+/* ========================================
+   BUTTONS - ENHANCED
+   ======================================== */
+.btn {
+    padding: 18px 36px;
+    border: none;
+    border-radius: 14px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    position: relative;
+    overflow: hidden;
+    font-family: 'Rajdhani', sans-serif;
+    backdrop-filter: blur(10px);
+    box-shadow: 
+        0 4px 15px rgba(0, 0, 0, 0.3),
+        0 1px 3px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Ripple effect on click */
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transition: width 0.6s ease, height 0.6s ease;
+}
+
+.btn:active::before {
+    width: 400px;
+    height: 400px;
+    transition: width 0.1s ease, height 0.1s ease;
+}
+
+/* Animated gradient background */
+.btn::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+    );
+    transform: rotate(45deg);
+    transition: all 0.5s ease;
+}
+
+.btn:hover::after {
+    animation: shine 2s infinite;
+}
+
+@keyframes shine {
+    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--cyber-primary) 0%, #0099ff 50%, var(--cyber-secondary) 100%);
+    background-size: 200% 200%;
+    color: #000;
+    border: 2px solid var(--cyber-primary);
+    box-shadow: 
+        0 0 20px rgba(0, 243, 255, 0.4),
+        0 4px 20px rgba(0, 243, 255, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    animation: gradientFlow 3s ease infinite;
+}
+
+@keyframes gradientFlow {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+.btn-primary:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 
+        0 0 40px rgba(0, 243, 255, 0.8),
+        0 15px 40px rgba(0, 243, 255, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    border-color: #fff;
+}
+
+.btn-primary:active {
+    transform: translateY(-2px) scale(0.98);
+    box-shadow: 
+        0 0 25px rgba(0, 243, 255, 0.6),
+        0 8px 25px rgba(0, 243, 255, 0.3);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, rgba(0, 255, 157, 0.1), rgba(0, 255, 157, 0.05));
+    color: var(--cyber-accent);
+    border: 2px solid var(--cyber-accent);
+    width: 100%;
+    margin-bottom: 20px;
+    box-shadow: 
+        0 0 15px rgba(0, 255, 157, 0.2),
+        0 4px 15px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(0, 255, 157, 0.1);
+}
+
+.btn-secondary:hover {
+    background: linear-gradient(135deg, rgba(0, 255, 157, 0.2), rgba(0, 255, 157, 0.15));
+    box-shadow: 
+        0 0 30px rgba(0, 255, 157, 0.5),
+        0 8px 25px rgba(0, 255, 157, 0.3),
+        inset 0 1px 0 rgba(0, 255, 157, 0.2);
+    transform: translateY(-3px) scale(1.01);
+    border-color: #fff;
+}
+
+.btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none !important;
+    animation: none !important;
+    filter: grayscale(1);
+}
+
+/* Button Icons */
+.btn-icon {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 8px;
+    font-size: 1.2em;
+    filter: drop-shadow(0 0 5px currentColor);
+}
