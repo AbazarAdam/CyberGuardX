@@ -2,14 +2,14 @@
 Domain Enumerations
 ====================
 Shared enums used across every layer of the application.
-Centralising them here avoids circular imports and keeps the domain pure.
 """
 
 from enum import Enum
 
 
 class RiskLevel(str, Enum):
-    """Risk classification returned to users."""
+    """Unified risk and severity classification."""
+    MINIMAL = "MINIMAL"
     LOW = "LOW"
     MEDIUM = "MEDIUM"
     HIGH = "HIGH"
@@ -26,17 +26,8 @@ class Grade(str, Enum):
     F = "F"
 
 
-class Severity(str, Enum):
-    """Vulnerability severity aligned with CVSS qualitative ratings."""
-    CRITICAL = "CRITICAL"
-    HIGH = "HIGH"
-    MEDIUM = "MEDIUM"
-    LOW = "LOW"
-    MINIMAL = "MINIMAL"
-
-
 class SecurityPosture(str, Enum):
-    """Human-readable summary of overall security health."""
+    """Overall security health summary."""
     EXCELLENT = "EXCELLENT"
     GOOD = "GOOD"
     FAIR = "FAIR"

@@ -8,7 +8,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from app.services.breach_checker import get_breach_checker
-from app.utils.hashing import hash_email
+from app.application.services.breach_checker import hash_email
 
 
 def test_breach_checker():

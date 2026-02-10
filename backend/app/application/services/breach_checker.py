@@ -12,16 +12,22 @@ Design decisions
   that the presentation layer can serialise directly.
 """
 
+import hashlib
 import json
 import sqlite3
 from datetime import datetime
 from typing import Dict, List, Optional
 
 from app.config import BREACH_DB_PATH
-from app.utils.hashing import hash_email          # single source of truth
 from app.utils.logger import get_logger
 
 logger = get_logger(__name__)
+
+
+def hash_email(email: str) -> str:
+    """SHA-1 hash an email for privacy (compatible with HIBP API)."""
+    normalized = email.strip().lower()
+    return hashlib.sha1(normalized.encode("utf-8")).hexdigest()
 
 
 class BreachCheckerService:

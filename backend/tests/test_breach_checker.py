@@ -11,7 +11,7 @@ backend_path = Path(__file__).resolve().parent
 sys.path.insert(0, str(backend_path))
 
 from app.services.breach_checker import get_breach_checker
-from app.utils.hashing import hash_email
+from app.application.services.breach_checker import hash_email
 from app.utils.hibp_client import get_hibp_client
 
 def test_breach_generator():
