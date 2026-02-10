@@ -16,15 +16,13 @@ DATA_DIR = BASE_DIR / "data"
 MODELS_DIR = BASE_DIR / "models"
 
 # ---------------------------------------------------------------------------
-# Database — PostgreSQL (production) or SQLite (development)
+# Database — PostgreSQL (primary) with automatic SQLite fallback
 # ---------------------------------------------------------------------------
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    # Default: SQLite for local development (zero config)
-    # For production, set DATABASE_URL env var to PostgreSQL:
-    #   postgresql://cyberguardx:cyberguardx_secure_2026@localhost:5432/cyberguardx
-    "sqlite:///./cyberguardx.db"
+    "postgresql://cyberguardx:cyberguardx_secure_2026@localhost:5432/cyberguardx"
 )
+SQLITE_FALLBACK_URL = "sqlite:///./cyberguardx.db"
 
 # ---------------------------------------------------------------------------
 # Redis Cache
