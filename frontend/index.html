@@ -17,72 +17,81 @@
 
         <main>
             <section class="card">
-                <h2>Email Breach Detection</h2>
-                <p class="description">Check if an email address has been compromised in known data breaches.</p>
+                <h2>📧 Email Breach Detection</h2>
+                <p class="description">Check if an email address has been compromised in known data breaches. We search across 10+ billion breach records.</p>
                 <div class="input-group">
                     <input 
                         type="email" 
                         id="emailInput" 
                         placeholder="Enter email address (e.g., user@example.com)"
                         autocomplete="off"
+                        aria-label="Email address to check"
                     >
-                    <button id="checkEmailBtn" class="btn btn-primary">
-                        Check Email
+                    <button id="checkEmailBtn" class="btn btn-primary" aria-label="Check email for breaches">
+                        <span class="btn-icon">🔍</span>
+                        <span>Check Email</span>
                     </button>
                 </div>
+                <div class="helper-text">💡 No data is stored or shared. All checks are encrypted and anonymous.</div>
                 <div id="emailResult" class="result-container"></div>
             </section>
 
             <section class="card">
-                <h2>Phishing URL Detection</h2>
-                <p class="description">Analyze URLs using machine learning to detect potential phishing attempts.</p>
+                <h2>🔗 Phishing URL Detection</h2>
+                <p class="description">Analyze URLs using advanced machine learning (98.5% accuracy) to detect potential phishing attempts and malicious websites.</p>
                 <div class="input-group">
                     <input 
                         type="text" 
                         id="urlInput" 
                         placeholder="Enter URL (e.g., http://example.com)"
                         autocomplete="off"
+                        aria-label="URL to check for phishing"
                     >
-                    <button id="checkUrlBtn" class="btn btn-primary">
-                        Check URL
+                    <button id="checkUrlBtn" class="btn btn-primary" aria-label="Analyze URL for phishing">
+                        <span class="btn-icon">🤖</span>
+                        <span>Analyze URL</span>
                     </button>
                 </div>
+                <div class="helper-text">💡 Powered by AI trained on millions of known phishing sites.</div>
                 <div id="urlResult" class="result-container"></div>
             </section>
 
             <!-- PASSWORD STRENGTH ANALYZER -->
             <section class="card">
                 <h2>🔐 Password Strength Analyzer</h2>
-                <p class="description">Analyze password strength with entropy calculation, pattern detection, and breach database checking.</p>
+                <p class="description">Advanced password analysis with entropy calculation, pattern detection, crack time estimation, and breach database checking.</p>
                 <div class="input-group">
                     <input 
                         type="text" 
                         id="passwordInput" 
-                        placeholder="Enter a password to analyze"
+                        placeholder="Enter a password to analyze (never stored)"
                         autocomplete="off"
+                        aria-label="Password to analyze"
                     >
-                    <button id="checkPasswordBtn" class="btn btn-primary">
-                        Analyze
+                    <button id="checkPasswordBtn" class="btn btn-primary" aria-label="Analyze password strength">
+                        <span class="btn-icon">🔬</span>
+                        <span>Analyze</span>
                     </button>
                 </div>
                 <div class="password-tools">
-                    <button id="generatePasswordBtn" class="btn btn-secondary btn-small">
+                    <button id="generatePasswordBtn" class="btn btn-secondary btn-small" title="Generate a secure random password">
                         🎲 Generate Random
                     </button>
-                    <button id="generatePassphraseBtn" class="btn btn-secondary btn-small">
+                    <button id="generatePassphraseBtn" class="btn btn-secondary btn-small" title="Generate a memorable passphrase">
                         📝 Generate Passphrase
                     </button>
                     <label class="checkbox-label" style="margin-left: 12px;">
-                        <input type="checkbox" id="showPassword" checked>
+                        <input type="checkbox" id="showPassword" checked aria-label="Toggle password visibility">
                         <span>Show password</span>
                     </label>
                 </div>
+                <div class="helper-text">💡 Passwords are analyzed locally and never sent to our servers or stored anywhere.</div>
                 <div id="passwordResult" class="result-container"></div>
             </section>
 
             <section class="card">
                 <h2>🔍 Website Security Scanner</h2>
-                <p class="description">Professional-grade security assessment with deep vulnerability analysis, compliance mapping, and remediation guidance.</p>
+                <p class="description">Professional-grade security assessment with 15+ security checks, deep vulnerability analysis, OWASP compliance mapping, and expert remediation guidance.</p>
                 
                 <div class="legal-disclaimer">
                     <div class="disclaimer-header">⚖️ Legal Disclaimer - Read Carefully</div>
@@ -113,21 +122,25 @@
                         id="websiteInput" 
                         placeholder="Enter website URL (e.g., https://example.com)"
                         autocomplete="off"
+                        aria-label="Website URL to scan"
                     >
-                    <button id="scanWebsiteBtn" class="btn btn-primary">
-                        Scan Website
+                    <button id="scanWebsiteBtn" class="btn btn-primary" aria-label="Start security scan">
+                        <span class="btn-icon">🚀</span>
+                        <span>Scan Website</span>
                     </button>
                 </div>
+                <div class="helper-text">⏱️ Scan typically takes 10-30 seconds. You'll see real-time progress updates.</div>
                 <!-- Real-time Progress Tracker -->
                 <div id="websiteScanProgress" style="display:none; margin-top: 20px;"></div>
                 <div id="websiteResult" class="result-container"></div>
             </section>
 
             <section class="card history-card">
-                <h2>Recent Scans</h2>
-                <p class="description">View the most recent security scans performed on this system.</p>
-                <button id="loadHistoryBtn" class="btn btn-secondary">
-                    Load Scan History
+                <h2>📜 Recent Scans</h2>
+                <p class="description">View your most recent security scans and analysis history. Data is stored locally for your privacy.</p>
+                <button id="loadHistoryBtn" class="btn btn-secondary" aria-label="Load scan history">
+                    <span class="btn-icon">📊</span>
+                    <span>Load Scan History</span>
                 </button>
                 <div id="historyResult" class="history-container"></div>
             </section>

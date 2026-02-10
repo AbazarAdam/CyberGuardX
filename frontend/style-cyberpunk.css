@@ -232,14 +232,29 @@ input[type="text"]:focus {
     outline: none;
     border-color: var(--cyber-primary);
     box-shadow: 
-        var(--glow-primary),
-        inset 0 0 20px rgba(0, 243, 255, 0.1);
+        0 0 25px rgba(0, 243, 255, 0.4),
+        inset 0 0 20px rgba(0, 243, 255, 0.1),
+        0 0 0 4px rgba(0, 243, 255, 0.1);
+    background: rgba(26, 31, 58, 1);
+    transform: translateY(-1px);
+}
+
+input[type="email"]:hover,
+input[type="text"]:hover {
+    border-color: rgba(0, 243, 255, 0.5);
     background: rgba(26, 31, 58, 1);
 }
 
 input[type="email"]::placeholder,
 input[type="text"]::placeholder {
     color: var(--text-muted);
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+input[type="email"]:focus::placeholder,
+input[type="text"]:focus::placeholder {
+    opacity: 0.4;
 }
 
 /* ========================================
@@ -376,22 +391,127 @@ input[type="text"]::placeholder {
     filter: grayscale(1);
 }
 
+/* Button Icons */
+.btn-icon {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 8px;
+    font-size: 1.2em;
+    filter: drop-shadow(0 0 5px currentColor);
+}
+
+/* ========================================
+   HELPER TEXT & HINTS
+   ======================================== */
+.helper-text {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 12px 18px;
+    background: rgba(0, 243, 255, 0.05);
+    border-left: 3px solid var(--cyber-primary);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    animation: fadeIn 0.5s ease;
+}
+
+.helper-text::before {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ========================================
+   INPUT VALIDATION STATES
+   ======================================== */
+input[type="email"].valid,
+input[type="text"].valid {
+    border-color: var(--cyber-accent);
+    box-shadow: 
+        0 0 15px rgba(0, 255, 157, 0.3),
+        inset 0 0 10px rgba(0, 255, 157, 0.05);
+}
+
+input[type="email"].invalid,
+input[type="text"].invalid {
+    border-color: var(--cyber-danger);
+    box-shadow: 
+        0 0 15px rgba(255, 0, 60, 0.3),
+        inset 0 0 10px rgba(255, 0, 60, 0.05);
+    animation: shake 0.3s ease;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
 /* ========================================
    RESULT CONTAINERS
    ======================================== */
 .result-container {
     display: none;
     padding: 30px;
-    border-radius: 12px;
+    border-radius: 14px;
     background: var(--glass-bg);
     backdrop-filter: blur(10px);
     border: 2px solid var(--cyber-primary);
     margin-top: 25px;
+    box-shadow: 
+        0 8px 32px rgba(0, 243, 255, 0.2),
+        inset 0 1px 0 rgba(0, 243, 255, 0.1);
+    position: relative;
+    overflow: hidden;
     animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.result-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, 
+        transparent,
+        var(--cyber-primary) 50%,
+        transparent
+    );
+    animation: scanLine 2s ease-in-out infinite;
 }
 
 .result-container.show {
     display: block;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-secondary);
+}
+
+.empty-state-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    opacity: 0.3;
+    filter: grayscale(1);
+}
+
+.empty-state-text {
+    font-size: 1.1rem;
+    line-height: 1.6;
 }
 
 @keyframes slideIn {
@@ -410,30 +530,73 @@ input[type="text"]::placeholder {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 25px;
-    padding-bottom: 20px;
-    border-bottom: 2px solid rgba(0, 243, 255, 0.2);
+    padding: 20px;
+    background: rgba(0, 243, 255, 0.03);
+    border-radius: 12px;
+    border-bottom: 3px solid rgba(0, 243, 255, 0.3);
+    flex-wrap: wrap;
+    gap: 15px;
 }
 
 .result-status {
-    font-size: 1.3rem;
-    font-weight: 700;
+    font-size: 1.4rem;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    padding-left: 15px;
+}
+
+.result-status::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 100%;
+    border-radius: 3px;
+    animation: pulse-icon 2s ease-in-out infinite;
 }
 
 .status-safe {
     color: var(--cyber-success);
-    text-shadow: var(--glow-accent);
+    text-shadow: 
+        0 0 20px rgba(0, 255, 157, 0.6),
+        0 0 40px rgba(0, 255, 157, 0.3);
+}
+
+.status-safe::before {
+    background: linear-gradient(180deg, var(--cyber-success), var(--cyber-accent));
+    box-shadow: 0 0 15px rgba(0, 255, 157, 0.8);
 }
 
 .status-warning {
     color: var(--cyber-warning);
-    text-shadow: 0 0 20px rgba(255, 189, 0, 0.5);
+    text-shadow: 
+        0 0 20px rgba(255, 189, 0, 0.6),
+        0 0 40px rgba(255, 189, 0, 0.3);
+}
+
+.status-warning::before {
+    background: linear-gradient(180deg, var(--cyber-warning), #ff9500);
+    box-shadow: 0 0 15px rgba(255, 189, 0, 0.8);
 }
 
 .status-danger {
     color: var(--cyber-danger);
-    text-shadow: var(--glow-danger);
+    text-shadow: 
+        0 0 20px rgba(255, 0, 60, 0.6),
+        0 0 40px rgba(255, 0, 60, 0.3);
+    animation: dangerPulse 2s ease-in-out infinite;
+}
+
+.status-danger::before {
+    background: linear-gradient(180deg, var(--cyber-danger), #cc0033);
+    box-shadow: 0 0 15px rgba(255, 0, 60, 0.8);
 }
 
 /* ========================================
@@ -695,10 +858,12 @@ input[type="text"]::placeholder {
 }
 
 /* ========================================
-   HISTORY TABLE
+   HISTORY TABLE - ENHANCED
    ======================================== */
 .history-container {
     display: none;
+    margin-top: 25px;
+    animation: slideIn 0.4s ease;
 }
 
 .history-container.show {
@@ -711,19 +876,23 @@ input[type="text"]::placeholder {
     border-spacing: 0;
     margin-top: 20px;
     overflow: hidden;
-    border-radius: 12px;
+    border-radius: 14px;
+    box-shadow: 
+        0 8px 25px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(0, 243, 255, 0.2);
 }
 
 .history-table th {
-    background: linear-gradient(135deg, rgba(0, 243, 255, 0.2), rgba(255, 0, 255, 0.2));
-    padding: 18px;
+    background: linear-gradient(135deg, rgba(0, 243, 255, 0.25), rgba(255, 0, 255, 0.25));
+    padding: 18px 20px;
     text-align: left;
-    font-weight: 700;
+    font-weight: 800;
     color: var(--cyber-primary);
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
     font-size: 0.9rem;
-    border-bottom: 2px solid var(--cyber-primary);
+    border-bottom: 3px solid var(--cyber-primary);
+    text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
 }
 
 .history-table td {
