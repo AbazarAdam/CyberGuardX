@@ -81,60 +81,74 @@ http://localhost:3000
 
 ---
 
-## Project Structure
+## Project Structure (Clean Architecture)
 
 ```
 CyberGuardX/
 ├── backend/
 │   ├── app/
-│   │   ├── main.py                 # FastAPI app entry point
-│   │   ├── api/                    # API endpoints
-│   │   │   ├── email_checker.py    # POST /check-email
-│   │   │   ├── url_checker.py      # POST /check-url
-│   │   │   ├── website_scanner.py  # POST /scan-website, GET /generate-report/{id}
-│   │   │   ├── password_checker.py # POST /check-password, POST /generate-password
-│   │   │   ├── history.py          # GET /scan-history
-│   │   │   └── schemas.py          # Pydantic request/response models
-│   │   ├── security/               # Security scanner modules
-│   │   │   ├── http_scanner.py     # 15 HTTP security headers
-│   │   │   ├── ssl_scanner.py      # TLS/certificate analysis
-│   │   │   ├── dns_scanner.py      # SPF, DMARC, DNSSEC
-│   │   │   ├── tech_detector.py    # Server/framework fingerprinting
-│   │   │   ├── risk_scorer.py      # Weighted 0-100 risk scoring
-│   │   │   ├── owasp_assessor.py   # OWASP Top 10 mapping
-│   │   │   ├── vulnerability_engine.py  # 18 deep vulnerability definitions
-│   │   │   ├── password_analyzer.py     # Password strength + generator
-│   │   │   └── safety_validator.py      # Rate limiting, legal checks
-│   │   ├── services/               # Business logic services
-│   │   │   ├── breach_checker.py   # Offline breach DB lookup
-│   │   │   ├── pdf_generator.py    # HTML security report generator
-│   │   │   └── progress_tracker.py # Real-time scan progress
-│   │   ├── ml/                     # Machine learning
-│   │   │   ├── feature_extractor.py    # 10 URL features
-│   │   │   ├── train_phishing_model.py # Model training
-│   │   │   └── model_evaluation.py     # Metrics & evaluation
-│   │   ├── db/                     # Database layer
-│   │   │   ├── database.py         # SQLite connection
-│   │   │   └── models.py          # SQLAlchemy models
-│   │   └── utils/                  # Utilities
-│   │       ├── hashing.py          # SHA-1 k-anonymity
-│   │       ├── breach_generator.py # Breach dataset generator
-│   │       └── hibp_client.py      # HIBP API client
-│   ├── data/                       # Datasets
-│   └── models/                     # Trained ML models
+│   │   ├── main.py                          # Composition root — wires all layers
+│   │   ├── config.py                        # Centralised settings (paths, CORS, etc.)
+│   │   ├── domain/                          # Pure business logic (zero dependencies)
+│   │   │   ├── enums.py                     # RiskLevel, Grade, Severity, SecurityPosture
+│   │   │   └── risk_engine.py               # calculate_risk_level() — deterministic rules
+│   │   ├── application/                     # Use-cases / orchestration
+│   │   │   └── services/
+│   │   │       ├── breach_checker.py         # Offline breach lookup service
+│   │   │       ├── progress_tracker.py       # Scan progress state-machine
+│   │   │       └── report_generator.py       # HTML security report builder
+│   │   ├── infrastructure/                  # External concerns
+│   │   │   ├── database/
+│   │   │   │   ├── connection.py             # SQLAlchemy engine & SessionLocal
+│   │   │   │   └── models.py                # ORM models (ScanHistory, WebsiteScan, ScanProgress)
+│   │   │   ├── ml/
+│   │   │   │   ├── feature_extractor.py      # 10 lexical URL features
+│   │   │   │   ├── trainer.py                # Model training pipeline
+│   │   │   │   └── evaluator.py              # Metrics & evaluation
+│   │   │   ├── security/                    # 9 scanner modules
+│   │   │   │   ├── http_scanner.py           # 15 HTTP security headers
+│   │   │   │   ├── ssl_scanner.py            # TLS / certificate analysis
+│   │   │   │   ├── dns_scanner.py            # SPF, DMARC, DNSSEC
+│   │   │   │   ├── tech_detector.py          # Server / framework fingerprinting
+│   │   │   │   ├── risk_scorer.py            # Weighted 0-100 risk scoring
+│   │   │   │   ├── owasp_assessor.py         # OWASP Top 10 mapping
+│   │   │   │   ├── vulnerability_engine.py   # 18 deep vulnerability definitions
+│   │   │   │   ├── password_analyzer.py      # Password strength + generator
+│   │   │   │   └── safety_validator.py       # Rate limiting, legal checks
+│   │   │   └── external/
+│   │   │       ├── hibp_client.py            # HIBP API client (k-anonymity)
+│   │   │       └── breach_data.py            # 15 realistic breach definitions
+│   │   ├── presentation/                    # HTTP layer (FastAPI)
+│   │   │   ├── schemas.py                   # All Pydantic request / response models
+│   │   │   ├── dependencies.py              # Shared get_db() dependency
+│   │   │   └── routes/
+│   │   │       ├── email.py                  # POST /check-email
+│   │   │       ├── url.py                    # POST /check-url
+│   │   │       ├── password.py               # POST /check-password, /generate-password
+│   │   │       ├── scanner.py                # POST /scan-website, GET /generate-report/{id}
+│   │   │       └── history.py                # GET /scan-history
+│   │   └── utils/
+│   │       └── hashing.py                   # SHA-1 k-anonymity email hashing
+│   ├── scripts/                             # CLI utilities
+│   │   ├── generate_breach_db.py            # Build offline breach SQLite DB
+│   │   └── train_model.py                   # Standalone model trainer
+│   ├── tests/                               # Backend unit tests
+│   ├── data/                                # Datasets (breach CSV, etc.)
+│   └── models/                              # Trained ML artefacts (.pkl)
 ├── frontend/
-│   ├── index.html                  # Main SPA page
-│   ├── app.js                      # Application logic
-│   ├── style.css                   # Base styles
-│   ├── style-cyberpunk.css         # Cyberpunk neon theme (1500+ lines)
-│   ├── server.py                   # Python HTTP server
-│   └── components/                 # React/JS components
-│       ├── ScanProgress.js         # Progress tracker
-│       └── WebsiteScanner.jsx      # Scanner component
-├── README.md                       # This file
-├── FYP_REPORT.md                   # Academic report
-├── TECHNICAL_DOCS.md               # Technical documentation
-└── CHANGELOG.md                    # Version history & bug fixes
+│   ├── index.html                           # Main SPA page
+│   ├── app.js                               # Application logic (~755 lines)
+│   ├── style-cyberpunk.css                  # Cyberpunk neon theme (1500+ lines)
+│   ├── server.py                            # Python HTTP server
+│   └── components/
+│       └── ScanProgress.js                  # Real-time progress tracker
+├── tests/                                   # Integration / E2E test scripts (.ps1)
+├── requirements.txt                         # Python dependencies
+├── .gitignore
+├── README.md                                # This file
+├── FYP_REPORT.md                            # Academic report
+├── TECHNICAL_DOCS.md                        # Technical documentation
+└── CHANGELOG.md                             # Version history & bug fixes
 ```
 
 ---
@@ -149,7 +163,11 @@ CyberGuardX/
 | POST | `/generate-password` | Secure password generation |
 | POST | `/scan-website` | Website security assessment |
 | GET | `/generate-report/{scan_id}` | HTML security report |
-| GET | `/scan-history` | Historical scan records |
+| GET | `/scan-history` | Email / URL scan history |
+| GET | `/website-scan-history` | Website scan history |
+| GET | `/scan-details/{scan_id}` | Full website scan results |
+| GET | `/scan-progress/{scan_id}` | Real-time scan progress |
+| POST | `/scan-progress/{scan_id}/cancel` | Cancel running scan |
 | GET | `/` | Health check |
 
 ---
@@ -158,8 +176,8 @@ CyberGuardX/
 
 ```powershell
 cd backend
-python -m app.ml.train_phishing_model
-python -m app.ml.model_evaluation
+python -m app.infrastructure.ml.trainer
+python -m app.infrastructure.ml.evaluator
 ```
 
 ---

@@ -17,6 +17,9 @@
 
 ## 1. System Architecture
 
+CyberGuardX follows **Clean Architecture** with four distinct layers.
+Dependencies always point inward: Presentation → Application → Infrastructure → Domain.
+
 ```
 ┌──────────────────────────────────────────────────────┐
 │               Frontend (Port 3000)                   │
@@ -28,26 +31,37 @@
 ┌──────────────────────────────────────────────────────┐
 │               Backend (FastAPI, Port 8000)            │
 │                                                      │
-│  API Layer:                                          │
-│    email_checker → breach_checker service             │
-│    url_checker → ML model (LogReg, 10 features)      │
-│    password_checker → password_analyzer engine        │
-│    website_scanner → scanner pipeline below           │
+│  Presentation Layer (app/presentation/)               │
+│    routes/email.py  → breach_checker service           │
+│    routes/url.py    → ML model (LogReg, 10 features)   │
+│    routes/password.py → password_analyzer engine       │
+│    routes/scanner.py  → scanner pipeline below         │
+│    routes/history.py  → scan history queries            │
+│    schemas.py / dependencies.py                       │
 │                                                      │
-│  Scanner Pipeline:                                   │
-│    SafetyValidator → rate limit + legal check         │
-│    ├─ HTTPSecurityScanner (15 headers)               │
-│    ├─ SSLTLSScanner (cert + TLS + cipher)            │
-│    ├─ DNSSecurityScanner (SPF/DMARC/DNSSEC)          │
-│    ├─ TechnologyDetector (server/framework)           │
-│    ├─ AdvancedVulnerabilityEngine (18 vulns)          │
-│    ├─ RiskScorer (weighted 0-100)                    │
-│    └─ OWASPAssessor (Top 10 mapping)                 │
+│  Application Layer (app/application/services/)        │
+│    breach_checker  → offline SQLite lookup              │
+│    progress_tracker → real-time scan progress           │
+│    report_generator → HTML security reports             │
 │                                                      │
-│  Services:                                           │
-│    PDFReportGenerator → HTML security reports         │
-│    ProgressTracker → real-time scan progress          │
-│    BreachChecker → offline SQLite lookup              │
+│  Infrastructure Layer (app/infrastructure/)            │
+│    database/  → SQLAlchemy connection & models          │
+│    security/  → 9 scanner modules                      │
+│      HTTPSecurityScanner (15 headers)                 │
+│      SSLTLSScanner (cert + TLS + cipher)              │
+│      DNSSecurityScanner (SPF/DMARC/DNSSEC)            │
+│      TechnologyDetector (server/framework)             │
+│      AdvancedVulnerabilityEngine (18 vulns)            │
+│      RiskScorer (weighted 0-100)                      │
+│      OWASPAssessor (Top 10 mapping)                   │
+│      PasswordStrengthAnalyzer                         │
+│      SafetyValidator (rate-limit + legal)              │
+│    ml/        → feature_extractor, trainer, evaluator   │
+│    external/  → hibp_client, breach_data                │
+│                                                      │
+│  Domain Layer (app/domain/)                           │
+│    enums.py      → RiskLevel, Grade, Severity          │
+│    risk_engine.py → pure risk calculation logic         │
 └────────────────────┬─────────────────────────────────┘
                      ▼
 ┌──────────────────────────────────────────────────────┐
@@ -78,13 +92,13 @@
 
 All scanning is **passive-only** — no payloads, no port scanning, no exploitation.
 
-### 2.1 HTTP Header Scanner (`http_scanner.py`)
+### 2.1 HTTP Header Scanner (`infrastructure/security/http_scanner.py`)
 - Checks **15 critical security headers**: HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, X-XSS-Protection, X-Permitted-Cross-Domain-Policies, Cross-Origin-Embedder-Policy, Cross-Origin-Opener-Policy, Cross-Origin-Resource-Policy, Cache-Control, Pragma, Expect-CT, Feature-Policy
 - Grades each header A–F based on presence and configuration quality
 - Risk points: CRITICAL=15, HIGH=10, MEDIUM=5, LOW=2
 - Method: Single GET request, header-only analysis
 
-### 2.2 SSL/TLS Scanner (`ssl_scanner.py`)
+### 2.2 SSL/TLS Scanner (`infrastructure/security/ssl_scanner.py`)
 - Certificate validity (expiry, trusted CA, chain validation)
 - TLS version detection (requires 1.2+; flags 1.0/1.1 as weak)
 - Cipher suite strength assessment
@@ -92,7 +106,7 @@ All scanning is **passive-only** — no payloads, no port scanning, no exploitat
 - Grade: A≥95, B≥85, C≥70, D≥50, F<50
 - Method: TLS handshake only
 
-### 2.3 DNS Security Scanner (`dns_scanner.py`)
+### 2.3 DNS Security Scanner (`infrastructure/security/dns_scanner.py`)
 - SPF record verification (email spoofing prevention)
 - DMARC policy detection (email authentication)
 - MX record analysis, CAA records
@@ -100,19 +114,19 @@ All scanning is **passive-only** — no payloads, no port scanning, no exploitat
 - Grade: A≥90, B≥80, C≥70, D≥60, F<60
 - Method: Standard DNS queries (public information)
 
-### 2.4 Technology Detector (`tech_detector.py`)
+### 2.4 Technology Detector (`infrastructure/security/tech_detector.py`)
 - 11 header-based signatures (Apache, Nginx, IIS, Express, etc.)
 - 8 HTML-based signatures (React, Angular, Vue, WordPress, etc.)
 - Version extraction from headers only
 - Method: Response header + HTML metadata analysis (no active probing)
 
-### 2.5 Risk Scoring Engine (`risk_scorer.py`)
+### 2.5 Risk Scoring Engine (`infrastructure/security/risk_scorer.py`)
 - Weighted formula: HTTP 30% + SSL 35% + DNS 15% + Tech 20%
 - Grade thresholds: A+ (0-5), A (6-15), B (16-30), C (31-50), D (51-65), F (66-100)
 - Risk levels: MINIMAL, LOW, MEDIUM, HIGH, CRITICAL
 - Generates risk breakdown, top risks, security summary
 
-### 2.6 OWASP Assessor (`owasp_assessor.py`)
+### 2.6 OWASP Assessor (`infrastructure/security/owasp_assessor.py`)
 Maps findings to OWASP Top 10 2021:
 - A01: Broken Access Control → CORS analysis
 - A02: Cryptographic Failures → TLS/HSTS check
@@ -125,7 +139,7 @@ Maps findings to OWASP Top 10 2021:
 
 ## 3. Vulnerability Engine
 
-`vulnerability_engine.py` provides deep analysis beyond basic header checks.
+`infrastructure/security/vulnerability_engine.py` provides deep analysis beyond basic header checks.
 
 ### 18 Vulnerability Definitions
 Each vulnerability includes: CWE ID, CVSS score, severity, OWASP mapping, simple explanation, technical detail, real-world example, fix instructions (Nginx/Apache/Node.js/IIS), priority timeframe, compliance references.
@@ -167,7 +181,7 @@ Groups vulnerabilities by urgency: Immediate → 24 Hours → 7 Days → 30 Days
 
 ## 4. Password Analyzer
 
-`password_analyzer.py` provides comprehensive password assessment.
+`infrastructure/security/password_analyzer.py` provides comprehensive password assessment.
 
 ### Analysis Components
 - **Entropy calculation**: $H = L \times \log_2(C)$ where L=length, C=charset size
@@ -191,7 +205,7 @@ POST /generate-password  { "length": 20, "mode": "random" | "memorable" }
 
 ## 5. Report Generation
 
-`pdf_generator.py` creates self-contained HTML security reports.
+`application/services/report_generator.py` creates self-contained HTML security reports.
 
 ### Report Sections
 1. **Header** — Target URL, scan timestamp, report ID
@@ -323,7 +337,6 @@ CREATE TABLE scan_progress (
 
 ### Components
 - **ScanProgress.js** — Real-time 7-step progress tracker (2-second polling)
-- **WebsiteScanner.jsx** — React-based scanner with legal disclaimers (legacy, still usable)
 
 ---
 
@@ -389,7 +402,7 @@ Invoke-RestMethod -Uri "http://localhost:8000/"
 ### Model Not Found
 ```powershell
 cd backend
-python -m app.ml.train_phishing_model
+python -m app.infrastructure.ml.trainer
 # Creates: models/phishing_model.pkl + phishing_model_metadata.json
 ```
 
@@ -402,7 +415,7 @@ Remove-Item backend/cyberguardx.db
 
 ### CORS Errors
 - Ensure frontend runs on `http://localhost:3000`
-- Backend CORS is configured for localhost:3000 in `main.py`
+- Backend CORS is configured for localhost:3000 in `config.py`
 
 ### Website Scan Fails
 - Verify target URL starts with `http://` or `https://`
@@ -415,6 +428,6 @@ Remove-Item backend/cyberguardx.db
 |-------|-----|
 | `ModuleNotFoundError: dnspython` | `pip install dnspython` |
 | `ModuleNotFoundError: cryptography` | `pip install cryptography` |
-| `FileNotFoundError: phishing_model.pkl` | Run `python -m app.ml.train_phishing_model` |
+| `FileNotFoundError: phishing_model.pkl` | Run `python -m app.infrastructure.ml.trainer` |
 | `sqlalchemy.exc.OperationalError` | Delete `cyberguardx.db`, restart backend |
 | `ConnectionRefusedError` | Start backend first: `uvicorn app.main:app --reload` |

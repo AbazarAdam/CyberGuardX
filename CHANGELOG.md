@@ -4,11 +4,59 @@ All notable changes, enhancements, bug fixes, and test results.
 
 ---
 
+## v5.0 – Clean Architecture Refactoring (Feb 2026)
+
+### Architecture Migration
+Migrated from flat directory structure (`api/`, `db/`, `security/`, `services/`, `ml/`) to **Clean Architecture** with four distinct layers:
+
+| Layer | Directory | Responsibility |
+|-------|-----------|----------------|
+| **Domain** | `app/domain/` | Pure business logic — zero external dependencies |
+| **Application** | `app/application/services/` | Use-case orchestration — breach checking, progress tracking, report generation |
+| **Infrastructure** | `app/infrastructure/` | External concerns — database, ML models, security scanners, external APIs |
+| **Presentation** | `app/presentation/` | HTTP layer — FastAPI routes, Pydantic schemas, shared dependencies |
+
+### New Files Created
+- `app/config.py` — Centralised configuration (paths, CORS, rate limits)
+- `app/domain/enums.py` — `RiskLevel`, `Grade`, `Severity`, `SecurityPosture` enums
+- `app/domain/risk_engine.py` — Pure `calculate_risk_level()` function (added CRITICAL threshold ≥0.85)
+- `app/infrastructure/database/connection.py` — SQLAlchemy engine & `SessionLocal`
+- `app/infrastructure/database/models.py` — All 3 ORM models with full docstrings
+- `app/infrastructure/external/breach_data.py` — Single source of truth for 15 breach definitions
+- `app/application/services/breach_checker.py` — Fully rewritten with LRU cache & clear docstrings
+- `app/application/services/progress_tracker.py` — Rewritten with 7-step state machine
+- `app/presentation/schemas.py` — All Pydantic models with section headers
+- `app/presentation/dependencies.py` — Shared `get_db()` (consolidated from 4 duplicates)
+- `app/presentation/routes/` — 5 route modules: `email.py`, `url.py`, `password.py`, `scanner.py`, `history.py`
+- `.gitignore` — Python, IDE, DB, ML model, OS exclusions
+- `requirements.txt` — All Python dependencies
+
+### Bug Fixes
+| Bug | Severity | Fix |
+|-----|----------|-----|
+| `vulnerability_engine.py` reads `ssl_scan.get("cipher")` but SSL scanner stores `"cipher_suite"` — cipher analysis always skipped | **HIGH** | Changed to `ssl_scan.get("cipher_suite")` |
+| `safety_validator.py` uses `any(allowed in domain ...)` — `example.com.evil.com` bypasses whitelist | **HIGH** | Changed to `domain.endswith()` check |
+| `Dict[str, any]` (lowercase) across 7 security modules | **MEDIUM** | Fixed 25 occurrences → `Dict[str, Any]` |
+| Duplicate `/scan-history` route in `history.py` and `website_scanner.py` | **MEDIUM** | Renamed website scanner's to `/website-scan-history` |
+| `test_enhancements.ps1` tests port 5000 instead of correct 3000 | **LOW** | Fixed to `localhost:3000` |
+
+### Cleanup
+- **Removed dead frontend files**: `style.css` (1115 lines), `WebsiteScanner.jsx` (296 lines), `WebsiteScanner.css` (542 lines)
+- **Removed orphaned backend root scripts** — moved to `scripts/` and `tests/`
+- **Consolidated duplicated code**: 4× `get_db()` → 1, 3× `hash_email()` → 1, breach constants → single `breach_data.py`
+- **Added comprehensive docstrings** and section comments throughout all new files
+- **Deleted old directories**: `api/`, `core/`, `db/`, `ml/`, `security/`, `services/`
+
+### Files Changed Summary
+102 files changed, 2723 insertions, 2842 deletions
+
+---
+
 ## v4.0 – Professional-Grade Security Enhancements (Feb 2026)
 
 ### New Features
 
-#### Deep Vulnerability Engine (`vulnerability_engine.py`, ~550 lines)
+#### Deep Vulnerability Engine (`infrastructure/security/vulnerability_engine.py`, ~810 lines)
 - **18 vulnerability definitions** with full metadata: CWE ID, CVSS score, severity, OWASP mapping, exploit difficulty
 - **Plain-language explanations** — each vulnerability includes "what this means" in simple terms
 - **Real-world examples** — reference to actual breaches/incidents for each vulnerability
@@ -18,7 +66,7 @@ All notable changes, enhancements, bug fixes, and test results.
 - **Compliance mapping** — PCI-DSS, GDPR, HIPAA, SOC 2, NIST, OWASP ASVS
 - **Security scorecard** — 5 categories scored independently (Transport, Headers, DNS, Server, WAF)
 
-#### Password Strength Analyzer (`password_analyzer.py`, ~400 lines)
+#### Password Strength Analyzer (`infrastructure/security/password_analyzer.py`, ~557 lines)
 - **Pattern detection**: Keyboard walks (qwerty, etc.), alphabetic/numeric sequences, leet speak (15 substitutions), repeated characters, common words (35), common passwords (50)
 - **Entropy calculation** with charset size analysis
 - **Crack time estimates** for 4 attack scenarios (online, bcrypt, MD5, GPU cluster)
@@ -26,7 +74,7 @@ All notable changes, enhancements, bug fixes, and test results.
 - **Score formula**: 0-100 with breakdown (length + diversity + uniqueness + entropy − penalties)
 - **Password generator**: Random mode (cryptographic) and memorable passphrase mode (50-word list)
 
-#### PDF/HTML Report Generator (`pdf_generator.py`, ~350 lines)
+#### PDF/HTML Report Generator (`application/services/report_generator.py`, ~459 lines)
 - Self-contained HTML with dark cyberpunk styling
 - Sections: Grade circle, executive summary, scorecard, priority timeline, vulnerability details with fix code, compliance grid
 - Print-friendly CSS with `@media print` rules
@@ -72,11 +120,10 @@ All notable changes, enhancements, bug fixes, and test results.
 - **ScanProgress DB table** for persistent state
 - Progress container minimizes (doesn't disappear) after scan completion
 
-### Files Created
-- `backend/app/services/progress_tracker.py` (~120 lines)
-- `backend/app/ml/model_evaluation.py` (~180 lines)
+### Files Created (v3.0)
+- `backend/app/application/services/progress_tracker.py` (~222 lines)
+- `backend/app/infrastructure/ml/evaluator.py` (~180 lines)
 - `frontend/components/ScanProgress.js` (~200 lines)
-- `frontend/components/ScanProgress.css` (~130 lines)
 
 ### Files Modified
 - `feature_extractor.py` — Added 4 new features + `FEATURE_EXPLANATIONS` dict
@@ -108,9 +155,9 @@ All notable changes, enhancements, bug fixes, and test results.
 - **LRU caching** for repeat queries
 - **Enhanced risk calculation**: 40% breach count + 30% severity + 20% recency + 10% accounts
 
-### Files Created
-- `backend/app/services/breach_checker.py` — Offline-first breach lookup
-- `backend/app/utils/breach_generator.py` — 100K record generator
+### Files Created (v2.0)
+- `backend/app/application/services/breach_checker.py` — Offline-first breach lookup
+- `backend/scripts/generate_breach_db.py` — 100K record generator
 - `backend/data/breach_emails_enhanced.csv` — Enhanced breach dataset
 
 ### Test Results (v2.0)

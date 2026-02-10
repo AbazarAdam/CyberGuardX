@@ -159,27 +159,27 @@ The website security scanner represents a significant extension of CyberGuardX, 
 
 **Passive Security Scanners:**
 
-1. **HTTP Header Scanner** (`app/security/http_scanner.py`)
+1. **HTTP Header Scanner** (`infrastructure/security/http_scanner.py`)
    - Checks 15 critical security headers (HSTS, CSP, X-Frame-Options, Permissions-Policy, etc.)
    - Grades each header (A-F) based on presence and configuration
    - Provides specific remediation recommendations
    - Method: Single GET request, header-only analysis (no payload inspection)
 
-2. **SSL/TLS Scanner** (`app/security/ssl_scanner.py`)
+2. **SSL/TLS Scanner** (`infrastructure/security/ssl_scanner.py`)
    - Certificate validity verification (expiration, trusted CA, chain validation)
    - TLS version detection (requires TLS 1.2+)
    - Cipher suite strength assessment
    - HSTS preload status check
    - Method: TLS handshake only (no exploitation attempts)
 
-3. **DNS Security Scanner** (`app/security/dns_scanner.py`)
+3. **DNS Security Scanner** (`infrastructure/security/dns_scanner.py`)
    - SPF record verification (email spoofing prevention)
    - DMARC policy detection (email authentication)
    - DKIM availability check
    - DNSSEC implementation status
    - Method: Standard DNS queries (public information)
 
-4. **Technology Detector** (`app/security/tech_detector.py`)
+4. **Technology Detector** (`infrastructure/security/tech_detector.py`)
    - Web server identification (Apache, Nginx, IIS)
    - Framework detection (React, WordPress, Django)
    - JavaScript library fingerprinting (jQuery, Bootstrap)
@@ -188,13 +188,13 @@ The website security scanner represents a significant extension of CyberGuardX, 
 
 **Analysis & Reporting:**
 
-5. **Risk Scoring Engine** (`app/security/risk_scorer.py`)
+5. **Risk Scoring Engine** (`infrastructure/security/risk_scorer.py`)
    - Weighted scoring algorithm (0-100 risk score)
    - Individual finding severity: CRITICAL (+25 pts), HIGH (+15 pts), MEDIUM (+8 pts), LOW (+5 pts)
    - Letter grade calculation: A+ (0-10), A (11-20), B (21-35), C (36-50), D (51-60), F (61-100)
    - Risk level assignment: MINIMAL, LOW, MEDIUM, HIGH, CRITICAL
 
-6. **OWASP Top 10 Assessor** (`app/security/owasp_assessor.py`)
+6. **OWASP Top 10 Assessor** (`infrastructure/security/owasp_assessor.py`)
    - Maps findings to OWASP Top 10 2021 framework:
      - A01:2021 - Broken Access Control → CORS analysis
      - A02:2021 - Cryptographic Failures → TLS/HSTS check
@@ -568,7 +568,7 @@ The trained Logistic Regression model achieved the following performance on the 
 - **Recall**: 98-100%
 - **F1-Score**: 98-100%
 
-**Note**: Actual metrics vary based on dataset composition. Run `python -m app.ml.model_evaluation` for current model's exact performance.
+**Note**: Actual metrics vary based on dataset composition. Run `python -m app.infrastructure.ml.evaluator` for current model's exact performance.
 
 ### 7.2 Confusion Matrix Results
 
@@ -1277,7 +1277,7 @@ python server.py
 ### Appendix D: Model Evaluation Script
 ```bash
 cd backend
-python -m app.ml.model_evaluation
+python -m app.infrastructure.ml.evaluator
 ```
 
 **Output Includes:**
