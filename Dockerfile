@@ -55,9 +55,10 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 COPY --chown=cyberguard:cyberguard backend/ ./backend/
 COPY --chown=cyberguard:cyberguard requirements.txt .
 
-# Copy data and models (if they exist)
-COPY --chown=cyberguard:cyberguard data/ ./data/ 2>/dev/null || true
-COPY --chown=cyberguard:cyberguard models/ ./models/ 2>/dev/null || true
+# Copy data and models
+# Note: directories created above; mount as volumes if not in build context
+COPY --chown=cyberguard:cyberguard data/ ./data/
+COPY --chown=cyberguard:cyberguard models/ ./models/
 
 # Switch to non-root user
 USER cyberguard

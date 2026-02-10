@@ -126,12 +126,6 @@ services:
 # ═════════════════════════════════════════════════════════════════════════════
 networks:
   cyberguardx-network:
-  postgres-data:
-    name: cyberguardx-postgres-data
-    driver: local
-  redis-data:
-    name: cyberguardx-redis-data
-    driver: local
     driver: bridge
     name: cyberguardx-network
 

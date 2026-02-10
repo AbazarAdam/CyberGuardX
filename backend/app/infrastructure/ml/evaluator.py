@@ -7,6 +7,7 @@ including confusion matrix, feature importance analysis, and performance metrics
 Academic Purpose: Final Year Project Documentation
 """
 
+import json
 import pickle
 from pathlib import Path
 
@@ -22,6 +23,41 @@ from sklearn.metrics import (
 from sklearn.model_selection import train_test_split
 
 from app.infrastructure.ml.feature_extractor import extract_url_features, features_to_array
+from app.config import PHISHING_MODEL_PATH, PHISHING_METADATA_PATH
+
+
+# =====================================================================
+# PhishingEvaluator — lightweight model wrapper for app.state
+# =====================================================================
+
+class PhishingEvaluator:
+    """
+    Lightweight wrapper that loads the trained phishing model and metadata
+    once and exposes them as attributes.
+
+    Used by ``main.py`` to preload into ``app.state.phishing_model`` so
+    route handlers get zero-cost model access.
+    """
+
+    def __init__(self):
+        if not PHISHING_MODEL_PATH.exists():
+            raise FileNotFoundError(
+                f"Model not found at {PHISHING_MODEL_PATH}. "
+                "Train first:  python -m app.infrastructure.ml.trainer"
+            )
+        with open(PHISHING_MODEL_PATH, "rb") as fh:
+            self.model = pickle.load(fh)
+
+        self.metadata: dict = {}
+        if PHISHING_METADATA_PATH.exists():
+            with open(PHISHING_METADATA_PATH, "r") as fh:
+                self.metadata = json.load(fh)
+
+    def predict(self, url: str) -> float:
+        """Return phishing probability for a single URL."""
+        features = extract_url_features(url)
+        arr = [features_to_array(features)]
+        return float(self.model.predict_proba(arr)[0][1])
 
 
 def print_section_header(title: str):

@@ -6,74 +6,77 @@
 
 ## Quick Start
 
-### 🚀 Easiest Way (One-Click Scripts)
+### Easiest Way (One-Click Scripts)
 
 **Option A: Full Docker Setup** (Recommended for production-like environment)
+
 ```powershell
 scripts\run_docker.bat
 ```
 
 **Option B: Local Development** (Best for coding with hot-reload)
+
 ```powershell
 scripts\run_full_local.bat
 ```
 
 **First Time?** Run setup first:
+
 ```powershell
 scripts\setup_dev_environment.bat
 ```
 
-📖 **All run scripts:** [scripts/README.md](scripts/README.md)
+See [scripts/README.md](scripts/README.md) for all run scripts.
 
 ---
 
-### 🛠️ Manual Setup
+### Manual Setup
 
-**Option A: Docker (Recommended)**
+#### Docker (Recommended)
+
 ```powershell
-# Start all services with Docker
 docker-compose up
-
-# Access:
-# Frontend: http://localhost:3000
-# Backend API: http://localhost:8000/docs
 ```
-📖 **See [docs/DOCKER_GUIDE.md](docs/DOCKER_GUIDE.md) for full Docker documentation**
 
-**Option B: Local Development**
+See [docs/DOCKER_GUIDE.md](docs/DOCKER_GUIDE.md) for full Docker documentation.
 
-### 1. Start Backend
+#### Local Development
+
+##### 1. Start Backend
+
 ```powershell
 cd backend
-..\venv\Scripts\activate       # or: ..\.venv\Scripts\activate
+..\venv\Scripts\activate
 uvicorn app.main:app --reload --port 8000
 ```
 
-### 2. Start Frontend
+##### 2. Start Frontend
+
 ```powershell
 cd frontend
 python -m http.server 3000
 ```
 
-### 3. Open Browser
-```
+##### 3. Open Browser
+
+```text
 http://localhost:3000
 ```
 
-> **API Docs**: http://localhost:8000/docs (Swagger) | http://localhost:8000/redoc
+> **API Docs**: <http://localhost:8000/docs> (Swagger) | <http://localhost:8000/redoc>
 
 ---
 
 ## Features
 
 | Module | Description |
-|--------|-------------|
+| --- | --- |
 | **Email Breach Checker** | Checks emails against 100K+ offline breach records across 15 real-world breaches (Adobe, LinkedIn, Yahoo, etc.) |
 | **URL Phishing Detector** | ML-powered (Logistic Regression, 10 features) with explainability — shows feature impacts, confidence scores |
 | **Password Strength Analyzer** | Entropy calculation, pattern detection (keyboard walks, leet speak, sequences), crack time estimates, breach DB check, password generator |
 | **Website Security Scanner** | Deep vulnerability analysis with 18 checks, CWE/CVSS scoring, OWASP Top 10 mapping, compliance frameworks (PCI-DSS, GDPR, HIPAA, SOC 2, NIST), WAF detection, fix instructions per platform |
 | **PDF Security Report** | Professional HTML report generation with cyberpunk styling, print-to-PDF ready |
-| **Scan History** | Persistent audit trail of all scans stored in SQLite |
+| **Scan History** | Persistent audit trail of all scans stored in PostgreSQL |
 | **Real-Time Progress** | 7-step animated progress tracker with 2-second polling |
 
 ---
@@ -81,24 +84,27 @@ http://localhost:3000
 ## Test Data
 
 ### Breach Emails
-| Email | Breaches | Risk Level |
-|-------|----------|------------|
-| `test@example.com` | 3 (Adobe, LinkedIn, Yahoo) | HIGH |
-| `demo@cyberguardx.com` | 5 | CRITICAL |
-| `user@test.com` | 2 | HIGH |
-| `admin@sample.com` | 4 | HIGH |
-| `safe@example.com` | 0 | LOW |
+
+| Email                      | Breaches                      | Risk Level |
+| -------------------------- | ----------------------------- | ---------- |
+| `test@example.com`         | 3 (Adobe, LinkedIn, Yahoo)    | HIGH       |
+| `demo@cyberguardx.com`     | 5                             | CRITICAL   |
+| `user@test.com`            | 2                             | HIGH       |
+| `admin@sample.com`         | 4                             | HIGH       |
+| `safe@example.com`         | 0                             | LOW        |
 
 ### Phishing URLs
-| URL | Expected Result |
-|-----|-----------------|
-| `https://google.com` | Legitimate (low score) |
-| `http://paypal-login-verify.suspicious-site.com/secure` | Phishing (high score) |
-| `http://192.168.1.1/admin/login.php?user=admin` | Phishing (IP-based) |
+
+| URL                                                           | Expected Result          |
+| ------------------------------------------------------------- | ------------------------ |
+| `https://google.com`                                          | Legitimate (low score)   |
+| `http://paypal-login-verify.suspicious-site.com/secure`       | Phishing (high score)    |
+| `http://192.168.1.1/admin/login.php?user=admin`               | Phishing (IP-based)      |
 
 ### Website Scan Targets (Authorized)
+
 | URL | Notes |
-|-----|-------|
+| --- | --- |
 | `https://example.com` | Basic test target |
 | `https://httpbin.org` | Returns useful security header mix |
 | `http://testphp.vulnweb.com` | Intentionally vulnerable (educational) |
@@ -108,9 +114,10 @@ http://localhost:3000
 ## Technology Stack
 
 | Layer | Technology |
-|-------|-----------|
+| --- | --- |
 | Backend | Python 3.11+, FastAPI, Uvicorn |
-| Database | SQLite + SQLAlchemy ORM |
+| Database | PostgreSQL + SQLAlchemy ORM + Alembic |
+| Cache | Redis 7 (distributed caching) |
 | ML | scikit-learn (Logistic Regression) |
 | Frontend | Vanilla HTML/CSS/JS, Cyberpunk theme |
 | Security | dnspython, cryptography, hashlib |
@@ -119,7 +126,7 @@ http://localhost:3000
 
 ## Project Structure (Clean Architecture)
 
-```
+```text
 CyberGuardX/
 ├── backend/
 │   ├── app/
@@ -136,77 +143,32 @@ CyberGuardX/
 │   │   ├── infrastructure/                  # External concerns
 │   │   │   ├── database/
 │   │   │   │   ├── connection.py             # SQLAlchemy engine & SessionLocal
-│   │   │   │   └── models.py                # ORM models (ScanHistory, WebsiteScan, ScanProgress)
-│   │   │   ├── ml/
-│   │   │   │   ├── feature_extractor.py      # 10 lexical URL features
-│   │   │   │   ├── trainer.py                # Model training pipeline
-│   │   │   │   └── evaluator.py              # Metrics & evaluation
+│   │   │   │   └── models.py                # ORM models
+│   │   │   ├── ml/                          # ML pipeline
 │   │   │   ├── security/                    # 9 scanner modules
-│   │   │   │   ├── http_scanner.py           # 15 HTTP security headers
-│   │   │   │   ├── ssl_scanner.py            # TLS / certificate analysis
-│   │   │   │   ├── dns_scanner.py            # SPF, DMARC, DNSSEC
-│   │   │   │   ├── tech_detector.py          # Server / framework fingerprinting
-│   │   │   │   ├── risk_scorer.py            # Weighted 0-100 risk scoring
-│   │   │   │   ├── owasp_assessor.py         # OWASP Top 10 mapping
-│   │   │   │   ├── vulnerability_engine.py   # 18 deep vulnerability definitions
-│   │   │   │   ├── password_analyzer.py      # Password strength + generator
-│   │   │   │   └── safety_validator.py       # Rate limiting, legal checks
-│   │   │   └── external/
-│   │   │       ├── hibp_client.py            # HIBP API client (k-anonymity)
-│   │   │       └── breach_data.py            # 15 realistic breach definitions
-│   │   ├── presentation/                    # HTTP layer (FastAPI)
-│   │   │   ├── schemas.py                   # All Pydantic request / response models
-│   │   │   ├── dependencies.py              # Shared get_db() dependency
-│   │   │   └── routes/
-│   │   │       ├── email.py                  # POST /check-email
-│   │   │       ├── url.py                    # POST /check-url
-│   │   │       ├── password.py               # POST /check-password, /generate-password
-│   │   │       ├── scanner.py                # POST /scan-website, GET /generate-report/{id}
-│   │   │       └── history.py                # GET /scan-history
-│   │   └── utils/
-│   │       └── hashing.py                   # SHA-1 k-anonymity email hashing
+│   │   │   └── external/                    # HIBP client, breach data
+│   │   ├── presentation/                    # HTTP layer (FastAPI routes)
+│   │   └── utils/                           # Hashing, logging
 │   ├── scripts/                             # CLI utilities
-│   │   ├── generate_breach_db.py            # Build offline breach SQLite DB
-│   │   └── train_model.py                   # Standalone model trainer
 │   ├── tests/                               # Backend unit tests
 │   ├── data/                                # Datasets (breach CSV, etc.)
 │   └── models/                              # Trained ML artefacts (.pkl)
 ├── frontend/
 │   ├── index.html                           # Main SPA page
-│   ├── app.js                               # Application logic (~755 lines)
-│   ├── style-cyberpunk.css                  # Cyberpunk neon theme (1500+ lines)
-│   ├── server.py                            # Python HTTP server
-│   └── components/
-│       └── ScanProgress.js                  # Real-time progress tracker
-├── scripts/                                 # Run scripts (Docker, local, etc.) ⭐
-│   ├── README.md                            # Scripts documentation
-│   ├── run_docker.bat                       # Full Docker deployment
-│   ├── run_full_local.bat                   # Local development setup
-│   ├── run_backend_local.bat                # Backend only (local)
-│   ├── run_frontend_local.bat               # Frontend only (local)
-│   ├── setup_dev_environment.bat            # Initial setup
-│   └── stop_all.bat                         # Stop all services
-├── docs/                                    # All documentation ⭐
-│   ├── README.md                            # Documentation hub
-│   ├── START_HERE.md                        # New contributor guide
-│   ├── TECHNICAL_DOCS.md                    # Technical documentation
-│   ├── FYP_REPORT.md                        # Academic project report
-│   ├── ARCHITECTURE_EVOLUTION.md            # Architecture diagrams
-│   ├── TECH_STACK_EVALUATION.md             # Technology analysis
-│   ├── TECH_STACK_QUICK_REFERENCE.md        # Quick tech reference
-│   ├── PERFORMANCE_OPTIMIZATIONS.md         # Performance improvements
-│   ├── PROJECT_OPTIMIZATION_REPORT.md       # 53-page optimization guide
-│   ├── REMAINING_WORK_DETAILED.md           # TODO step-by-step
-│   ├── DOCKER_GUIDE.md                      # Docker deployment
-│   ├── DEPLOYMENT_COMPLETE.md               # Deployment checklist
-│   ├── REFACTORING_SUMMARY.md               # Clean Architecture refactor
-│   └── MODERN_DATA_FORMATS_COMPARISON.md    # Data formats analysis
-├── tests/                                   # Integration / E2E test scripts (.ps1)
+│   ├── app.js                               # Application logic
+│   ├── style-cyberpunk-modular.css          # Modular CSS entry (28 modules)
+│   ├── styles/                              # Modular CSS architecture
+│   │   ├── core/                            # Variables, reset, base
+│   │   ├── layout/                          # Header, main, footer, responsive
+│   │   ├── components/                      # 16 reusable UI modules
+│   │   └── features/                        # 5 feature-specific styles
+│   └── components/                          # JS components
+├── scripts/                                 # Run scripts (Docker, local, etc.)
+├── docs/                                    # All documentation
 ├── requirements.txt                         # Python dependencies
 ├── docker-compose.yml                       # Multi-container orchestration
-├── .gitignore
-├── README.md                                # This file (you are here)
-└── CHANGELOG.md                             # Version history & bug fixes
+├── README.md                                # This file
+└── CHANGELOG.md                             # Version history
 ```
 
 ---
@@ -214,75 +176,51 @@ CyberGuardX/
 ## API Endpoints
 
 | Method | Endpoint | Description |
-|--------|----------|-------------|
+| --- | --- | --- |
 | POST | `/check-email` | Email breach detection |
 | POST | `/check-url` | ML phishing URL classification |
 | POST | `/check-password` | Password strength analysis |
 | POST | `/generate-password` | Secure password generation |
-| Quick start (one command)
-scripts\run_docker.bat
-
-# Or manual:
-docker-compose up
-
-# Production
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-```
-
-Full documentation: **[docs/DOCKER_GUIDE.md](docs/
+| POST | `/scan-website` | Website security scan |
+| GET | `/scan-progress/{id}` | Real-time scan progress |
+| GET | `/generate-report/{id}` | HTML security report |
+| GET | `/scan-history` | Scan audit trail (paginated) |
+| GET | `/` | Health check |
 
 ---
 
-## 🐳 Docker Deployment
-
-**Production-ready containerized setup:**
+## Docker Deployment
 
 ```powershell
-# Development
+# Quick start (one command)
+scripts\run_docker.bat
+
+# Or manual
 docker-compose up
 
 # Production
 docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 ```
 
-Full documentation: **[DOCKER_GUIDE.md](DOCKER_GUIDE.md)**
+Full documentation: [docs/DOCKER_GUIDE.md](docs/DOCKER_GUIDE.md)
 
 ---
 
-## 🤖 CI/CD Pipeline
+## Architecture and Performance
 
-Automated testing and deployment via GitHub Actions:
-- ✅ Code quality checks (flake8, black, mypy)
-- ✅ Security scanning (Bandit, Safety)
-- ✅ Docker image building
-- ✅ Automatic deployment on `main` branch
+- **Tech Stack Evaluation** — [docs/TECH_STACK_EVALUATION.md](docs/TECH_STACK_EVALUATION.md)
+- **Quick Reference Guide** — [docs/TECH_STACK_QUICK_REFERENCE.md](docs/TECH_STACK_QUICK_REFERENCE.md)
+- **Architecture Evolution** — [docs/ARCHITECTURE_EVOLUTION.md](docs/ARCHITECTURE_EVOLUTION.md)
 
-Pipeline configuration: **[.github/workflows/ci-cd.yml](.github/workflows/ci-cd.yml)**
+**Completed Upgrades:**
 
----
+1. PostgreSQL + Redis (10,000+ concurrent users capable)
+2. Distributed caching (50-100x faster cache hits)
+3. Pagination + Indexing (30-50x faster queries)
+4. ML model preloading (7x faster predictions)
+5. CSS modularization (2,967 lines → 28 modules)
 
-## 📊 Architecture & Technology Stack
-docs/TECH_STACK_EVALUATION.md](docs/TECH_STACK_EVALUATION.md)  
-  In-depth analysis of all technologies with industry best practices comparison
-  
-- **⚡ Quick Reference Guide** → [docs/TECH_STACK_QUICK_REFERENCE.md](docs/TECH_STACK_QUICK_REFERENCE.md)  
-  Component scorecard, priority upgrades, and decision matrix
-
-- **🏗️ Architecture Evolution** → [docs/ARCHITECTURE_EVOLUTION.md](docs/ARCHITECTURE_EVOLUTION.md)  
-  Visual diagrams showing system architecture progression (prototype → enterprise)
-
-**Current Status:** Production-ready with performance overhaul complete! ✅
-
-**✅ Completed Upgrades:**
-1. ✅ PostgreSQL + Redis (10,000+ concurrent users capable)
-2. ✅ Distributed caching (50-100x faster cache hits)
-3. ✅ Pagination + Indexing (30-50x faster queries)
-4. ✅ ML model preloading (7x faster predictions)
-
-**📖 See:** [docs/PERFORMANCE_OPTIMIZATIONS.md](docs/PERFORMANCE_OPTIMIZATIONS.md) for full details
-2. 🟠 Add Redis for distributed caching
-3. 🟠 Vanilla JS → React + TypeScript (maintainability)
-4. 🟠 Logistic Regression → XGBoost (92-95% accuracy)
+See [docs/PERFORMANCE_OPTIMIZATIONS.md](docs/PERFORMANCE_OPTIMIZATIONS.md) for full details.
 
 ---
 
@@ -302,29 +240,25 @@ Chrome 90+ | Firefox 88+ | Safari 14+ | Edge 90+
 
 ---
 
-## Licensedocs/TECHNICAL_DOCS.md](docs/TECHNICAL_DOCS.md) for ethical guidelines.
+## Documentation
 
----
-
-## 📚 Documentation
-
-**All documentation organized in:** [docs/README.md](docs/README.md)
+All documentation organized in [docs/README.md](docs/README.md).
 
 **Quick links:**
-- 🚀 [Getting Started](docs/START_HERE.md)
-- 🏗️ [Architecture](docs/TECHNICAL_DOCS.md)
-- ⚡ [Performance](docs/PERFORMANCE_OPTIMIZATIONS.md)
-- 🐳 [Docker Guide](docs/DOCKER_GUIDE.md)
-- 📝 [Remaining Work](docs/REMAINING_WORK_DETAILED.md)
-- 🎓 [Academic Report](docs/FYP_REPORT.md)
+
+- [Getting Started](docs/START_HERE.md)
+- [Architecture](docs/TECHNICAL_DOCS.md)
+- [Performance](docs/PERFORMANCE_OPTIMIZATIONS.md)
+- [Docker Guide](docs/DOCKER_GUIDE.md)
+- [Remaining Work](docs/REMAINING_WORK_DETAILED.md)
+- [Academic Report](docs/FYP_REPORT.md)
 
 ---
 
-## 🛠️ Development Scripts
+## Development Scripts
 
-**All run scripts in:** [scripts/README.md](scripts/README.md)
+All run scripts in [scripts/README.md](scripts/README.md).
 
-**Quick commands:**
 ```powershell
 scripts\setup_dev_environment.bat    # First-time setup
 scripts\run_docker.bat               # Full Docker
@@ -332,7 +266,11 @@ scripts\run_full_local.bat           # Local development
 scripts\stop_all.bat                 # Stop everything
 ```
 
-MIT License — Academic Research Project  
+---
+
+## License
+
+MIT License — Academic Research Project
 **Academic Year**: 2025–2026
 
-> **Important**: The website scanner is passive-only. Always obtain permission before scanning websites you don't own. See [TECHNICAL_DOCS.md](TECHNICAL_DOCS.md) for ethical guidelines.
+> **Important**: The website scanner is passive-only. Always obtain permission before scanning websites you don't own. See [docs/TECHNICAL_DOCS.md](docs/TECHNICAL_DOCS.md) for ethical guidelines.

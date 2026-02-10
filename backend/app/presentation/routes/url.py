@@ -7,11 +7,10 @@ feature-level explainability.
 
 import json
 import pickle
-from functools import lru_cache
 from pathlib import Path
 from typing import Tuple
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
 from app.config import PHISHING_MODEL_PATH, PHISHING_METADATA_PATH
@@ -38,34 +37,50 @@ router = APIRouter()
 
 
 # ──────────────────────────────────────────────────────────────────────────
-# Model loader (cached — loaded once, reused across requests)
+# Model loader — uses app.state preloaded model, falls back to disk
 # ──────────────────────────────────────────────────────────────────────────
 
-@lru_cache(maxsize=1)
-def load_phishing_model() -> Tuple:
-    """
-    Load the trained phishing detection model and its metadata.
+_cached_model = None
+_cached_metadata = None
 
-    Returns:
-        ``(model, metadata_dict)``
 
-    Raises:
-        FileNotFoundError: if the ``.pkl`` file doesn't exist.
-    """
+def _load_model_from_disk() -> Tuple:
+    """Load model from disk (fallback when app.state is unavailable)."""
+    global _cached_model, _cached_metadata
+    if _cached_model is not None:
+        return _cached_model, _cached_metadata
+
     if not PHISHING_MODEL_PATH.exists():
         raise FileNotFoundError(
             f"Model not found at {PHISHING_MODEL_PATH}. "
             "Train first:  python -m app.infrastructure.ml.trainer"
         )
     with open(PHISHING_MODEL_PATH, "rb") as fh:
-        model = pickle.load(fh)
+        _cached_model = pickle.load(fh)
 
-    metadata = {}
+    _cached_metadata = {}
     if PHISHING_METADATA_PATH.exists():
         with open(PHISHING_METADATA_PATH, "r") as fh:
-            metadata = json.load(fh)
+            _cached_metadata = json.load(fh)
 
-    return model, metadata
+    return _cached_model, _cached_metadata
+
+
+def get_model(request: Request) -> Tuple:
+    """
+    Get the ML model, preferring the preloaded app.state version.
+
+    Priority:
+      1. ``app.state.phishing_model`` (preloaded at startup — fastest)
+      2. Module-level cached load from disk (one-time cost)
+    """
+    evaluator = getattr(request.app.state, "phishing_model", None)
+    if evaluator is not None and hasattr(evaluator, "model"):
+        # PhishingEvaluator wraps model + metadata
+        metadata = getattr(evaluator, "metadata", {})
+        return evaluator.model, metadata
+
+    return _load_model_from_disk()
 
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -73,12 +88,16 @@ def load_phishing_model() -> Tuple:
 # ──────────────────────────────────────────────────────────────────────────
 
 @router.post("/check-url", response_model=URLCheckResponse)
-def check_url(payload: URLCheckRequest, db: Session = Depends(get_db)):
+def check_url(
+    payload: URLCheckRequest,
+    request: Request,
+    db: Session = Depends(get_db),
+):
     """Analyse a URL for phishing indicators using the ML model."""
 
-    # 1. Load model
+    # 1. Load model (preloaded from app.state or cached from disk)
     try:
-        model, metadata = load_phishing_model()
+        model, metadata = get_model(request)
     except FileNotFoundError as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
 

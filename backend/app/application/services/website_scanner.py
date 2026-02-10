@@ -7,6 +7,7 @@ multiple infrastructure scanners and persisting results.
 This service implements the Use Case layer of Clean Architecture.
 """
 
+import asyncio
 import json
 import time
 from datetime import datetime
@@ -144,54 +145,89 @@ class WebsiteScanService:
             raise ValueError(error_message)
 
     def _run_security_scans(self, scan_id: str, url: str) -> Dict[str, Any]:
-        """Execute all security scanner modules."""
+        """Execute all security scanner modules (parallel where possible)."""
         results = {}
         errors = []
 
-        # HTTP headers scan
-        self.tracker.update_progress(scan_id, 2, 0)
+        # Try async-parallel execution; fall back to sequential sync
         try:
-            results["http_headers"] = self.http_scanner.scan(url)
-            self.tracker.update_progress(scan_id, 2, 3)
-        except Exception as exc:
-            logger.error(f"HTTP scan failed: {exc}")
-            errors.append(f"HTTP scan failed: {exc}")
-            results["http_headers"] = {"error": str(exc), "success": False}
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            loop = None
 
-        # SSL/TLS scan
-        self.tracker.update_progress(scan_id, 3, 0)
-        try:
-            results["ssl_tls"] = self.ssl_scanner.scan(url)
-            self.tracker.update_progress(scan_id, 3, 2)
-        except Exception as exc:
-            logger.error(f"SSL scan failed: {exc}")
-            errors.append(f"SSL scan failed: {exc}")
-            results["ssl_tls"] = {"error": str(exc), "success": False}
-
-        # DNS security scan
-        self.tracker.update_progress(scan_id, 4, 0)
-        try:
-            results["dns_security"] = self.dns_scanner.scan(url)
-            self.tracker.update_progress(scan_id, 4, 4)
-        except Exception as exc:
-            logger.error(f"DNS scan failed: {exc}")
-            errors.append(f"DNS scan failed: {exc}")
-            results["dns_security"] = {"error": str(exc), "success": False}
-
-        # Technology detection
-        self.tracker.update_progress(scan_id, 5, 0)
-        try:
-            results["technologies"] = self.tech_detector.scan(url)
-            self.tracker.update_progress(scan_id, 5, 3)
-        except Exception as exc:
-            logger.error(f"Tech scan failed: {exc}")
-            errors.append(f"Tech detection failed: {exc}")
-            results["technologies"] = {"error": str(exc), "success": False}
+        if loop and loop.is_running():
+            # We're inside an async context (FastAPI) — run scans concurrently
+            import concurrent.futures
+            with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+                # Submit all sync scanners to thread pool
+                futures = {
+                    "http_headers": pool.submit(self._scan_http, scan_id, url),
+                    "ssl_tls": pool.submit(self._scan_ssl, scan_id, url),
+                    "dns_security": pool.submit(self._scan_dns, scan_id, url),
+                    "technologies": pool.submit(self._scan_tech, scan_id, url),
+                }
+                for key, future in futures.items():
+                    try:
+                        results[key] = future.result(timeout=30)
+                    except Exception as exc:
+                        logger.error(f"{key} scan failed: {exc}")
+                        errors.append(f"{key} scan failed: {exc}")
+                        results[key] = {"error": str(exc), "success": False}
+        else:
+            # Sequential fallback
+            results["http_headers"] = self._scan_http(scan_id, url)
+            results["ssl_tls"] = self._scan_ssl(scan_id, url)
+            results["dns_security"] = self._scan_dns(scan_id, url)
+            results["technologies"] = self._scan_tech(scan_id, url)
 
         if errors:
             results["scan_errors"] = errors
 
         return results
+
+    def _scan_http(self, scan_id: str, url: str) -> Dict[str, Any]:
+        """Run HTTP headers scan."""
+        self.tracker.update_progress(scan_id, 2, 0)
+        try:
+            result = self.http_scanner.scan(url)
+            self.tracker.update_progress(scan_id, 2, 3)
+            return result
+        except Exception as exc:
+            logger.error(f"HTTP scan failed: {exc}")
+            return {"error": str(exc), "success": False}
+
+    def _scan_ssl(self, scan_id: str, url: str) -> Dict[str, Any]:
+        """Run SSL/TLS scan."""
+        self.tracker.update_progress(scan_id, 3, 0)
+        try:
+            result = self.ssl_scanner.scan(url)
+            self.tracker.update_progress(scan_id, 3, 2)
+            return result
+        except Exception as exc:
+            logger.error(f"SSL scan failed: {exc}")
+            return {"error": str(exc), "success": False}
+
+    def _scan_dns(self, scan_id: str, url: str) -> Dict[str, Any]:
+        """Run DNS security scan."""
+        self.tracker.update_progress(scan_id, 4, 0)
+        try:
+            result = self.dns_scanner.scan(url)
+            self.tracker.update_progress(scan_id, 4, 4)
+            return result
+        except Exception as exc:
+            logger.error(f"DNS scan failed: {exc}")
+            return {"error": str(exc), "success": False}
+
+    def _scan_tech(self, scan_id: str, url: str) -> Dict[str, Any]:
+        """Run technology detection scan."""
+        self.tracker.update_progress(scan_id, 5, 0)
+        try:
+            result = self.tech_detector.scan(url)
+            self.tracker.update_progress(scan_id, 5, 3)
+            return result
+        except Exception as exc:
+            logger.error(f"Tech scan failed: {exc}")
+            return {"error": str(exc), "success": False}
 
     def _calculate_risk(self, scan_id: str, scan_results: Dict) -> Dict[str, Any]:
         """Calculate comprehensive risk score."""

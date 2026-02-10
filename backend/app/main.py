@@ -71,7 +71,8 @@ async def lifespan(app: FastAPI):
     
     yield
     
-    # === SHUTDOWN ===logger.info("👋 CyberGuardX shutting down...")
+    # === SHUTDOWN ===
+    logger.info("👋 CyberGuardX shutting down...")
 
 # =====================================================================
 # Application factory

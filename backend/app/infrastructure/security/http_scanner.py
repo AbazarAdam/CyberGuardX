@@ -3,12 +3,21 @@ HTTP Security Headers Scanner
 
 Performs PASSIVE analysis of HTTP security headers.
 NO PAYLOADS - Only checks response headers from standard requests.
+
+Supports both sync (requests) and async (aiohttp) modes.
 """
 
+import asyncio
 import requests
 from typing import Any, Dict, List, Optional, Tuple
 from datetime import datetime
 from urllib.parse import urlparse
+
+try:
+    import aiohttp
+    HAS_AIOHTTP = True
+except ImportError:
+    HAS_AIOHTTP = False
 
 
 class SecurityHeader:
@@ -405,10 +414,106 @@ class HTTPSecurityScanner:
         
         return recommendations[:10]  # Top 10 recommendations
 
+    # ------------------------------------------------------------------
+    # Async scan using aiohttp (5-10x faster for full website scans)
+    # ------------------------------------------------------------------
+
+    async def async_scan(self, url: str) -> Dict[str, Any]:
+        """
+        Async version of scan() — uses aiohttp for non-blocking I/O.
+
+        Falls back to sync scan() if aiohttp is unavailable.
+        """
+        if not HAS_AIOHTTP:
+            return self.scan(url)
+
+        result = {
+            "url": url,
+            "scan_timestamp": datetime.utcnow().isoformat(),
+            "success": False,
+            "error": None,
+            "headers_found": {},
+            "headers_missing": [],
+            "header_analysis": {},
+            "overall_grade": None,
+            "overall_score": 0,
+            "recommendations": [],
+            "risk_points": 0,
+        }
+
+        timeout = aiohttp.ClientTimeout(total=self.timeout)
+        try:
+            async with aiohttp.ClientSession(
+                timeout=timeout,
+                headers={"User-Agent": self.user_agent},
+            ) as session:
+                async with session.get(url, ssl=True, allow_redirects=True) as response:
+                    result["status_code"] = response.status
+                    result["final_url"] = str(response.url)
+                    resp_headers = response.headers
+
+            # Analyse all headers (CPU-bound, fast — no need for async)
+            header_results = {}
+            risk_points = 0
+
+            for header_name, header_spec in SECURITY_HEADERS.items():
+                header_value = resp_headers.get(header_name)
+
+                grade, score, feedback = HeaderGrader.grade_header(
+                    header_name, header_value
+                )
+
+                header_results[header_name] = {
+                    "present": header_value is not None,
+                    "value": header_value,
+                    "grade": grade,
+                    "score": score,
+                    "feedback": feedback,
+                    "severity": header_spec.severity,
+                    "description": header_spec.description,
+                    "recommended_value": header_spec.recommended_value,
+                    "owasp_category": header_spec.owasp_category,
+                }
+
+                if header_value is not None:
+                    result["headers_found"][header_name] = header_value
+                else:
+                    result["headers_missing"].append(header_name)
+                    severity_risk = {
+                        "CRITICAL": 15,
+                        "HIGH": 10,
+                        "MEDIUM": 5,
+                        "LOW": 2,
+                    }
+                    risk_points += severity_risk.get(header_spec.severity, 0)
+
+            result["header_analysis"] = header_results
+            result["risk_points"] = min(risk_points, 100)
+
+            overall_grade, overall_score = HeaderGrader.calculate_overall_grade(
+                header_results
+            )
+            result["overall_grade"] = overall_grade
+            result["overall_score"] = overall_score
+            result["recommendations"] = self._generate_recommendations(header_results)
+            result["success"] = True
+
+        except asyncio.TimeoutError:
+            result["error"] = "Request timeout - server did not respond"
+        except aiohttp.ClientSSLError as e:
+            result["error"] = f"SSL certificate error: {e}"
+            result["risk_points"] = 20
+        except aiohttp.ClientError as e:
+            result["error"] = f"Connection error: {e}"
+        except Exception as e:
+            result["error"] = f"Scan error: {e}"
+
+        return result
+
 
 def scan_http_headers(url: str) -> Dict[str, Any]:
     """
-    Convenience function to scan HTTP security headers.
+    Convenience function to scan HTTP security headers (sync).
     
     Args:
         url: Target URL to scan
@@ -418,3 +523,17 @@ def scan_http_headers(url: str) -> Dict[str, Any]:
     """
     scanner = HTTPSecurityScanner()
     return scanner.scan(url)
+
+
+async def async_scan_http_headers(url: str) -> Dict[str, Any]:
+    """
+    Convenience function to scan HTTP security headers (async).
+
+    Args:
+        url: Target URL to scan
+
+    Returns:
+        Dictionary with scan results
+    """
+    scanner = HTTPSecurityScanner()
+    return await scanner.async_scan(url)
