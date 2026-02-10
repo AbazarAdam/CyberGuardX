@@ -111,7 +111,7 @@ class WebsiteScanService:
             )
 
             # Mark complete
-            self.tracker.set_complete(scan_id)
+            self.tracker.complete_scan(scan_id)
 
             return self._build_response(
                 db_scan, scan_results, risk_analysis,
