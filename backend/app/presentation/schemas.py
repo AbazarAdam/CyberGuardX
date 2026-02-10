@@ -114,41 +114,32 @@ class WebsiteScanResponse(BaseModel):
     scan_id: int
     url: str
     scan_timestamp: str
-    progress_scan_id: Optional[str] = None       # UUID for progress tracking
+    scan_duration_ms: int
 
     # Overall assessment
     risk_score: int                                # 0-100
     risk_level: str                                # CRITICAL / HIGH / MEDIUM / LOW / MINIMAL
     overall_grade: str                             # A / B / C / D / F
-    security_posture: str                          # EXCELLENT / GOOD / FAIR / POOR / CRITICAL
 
-    # Component grades
-    http_grade: str
-    ssl_grade: str
-    dns_grade: str
-    tech_grade: str
+    # Issue counts
+    critical_issues: int = 0
+    high_issues: int = 0
 
-    # OWASP compliance
-    owasp_compliance_score: int
-    compliant_categories: int
-    non_compliant_categories: int
+    # Component results
+    http_security: Optional[Dict[str, Any]] = None
+    ssl_tls: Optional[Dict[str, Any]] = None
+    dns_security: Optional[Dict[str, Any]] = None
+    technologies: Optional[Dict[str, Any]] = None
 
-    # Top risks
-    top_risks: List[Dict[str, Any]]
-    critical_issues_count: int
-    high_issues_count: int
+    # OWASP & vulnerability analysis
+    owasp_top_10: Optional[Dict[str, Any]] = None
+    vulnerabilities: Optional[Dict[str, Any]] = None
 
-    # Detailed results (fetched on demand)
-    http_scan: Optional[Dict[str, Any]] = None
-    ssl_scan: Optional[Dict[str, Any]] = None
-    dns_scan: Optional[Dict[str, Any]] = None
-    tech_scan: Optional[Dict[str, Any]] = None
-    owasp_assessment: Optional[Dict[str, Any]] = None
-    risk_analysis: Optional[Dict[str, Any]] = None
-    vulnerability_analysis: Optional[Dict[str, Any]] = None
+    # Risk breakdown
+    component_scores: Optional[Dict[str, Any]] = None
 
-    scan_duration_ms: int
-    recommendations: List[str]
+    # Recommendations
+    recommendations: List[str] = []
 
 
 class WebsiteScanHistoryResponse(BaseModel):
