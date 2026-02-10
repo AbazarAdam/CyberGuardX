@@ -20,8 +20,10 @@ MODELS_DIR = BASE_DIR / "models"
 # ---------------------------------------------------------------------------
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "postgresql://cyberguardx:cyberguardx_secure_2026@localhost:5432/cyberguardx"
-    # Fallback to SQLite for development: "sqlite:///./cyberguardx.db"
+    # Default: SQLite for local development (zero config)
+    # For production, set DATABASE_URL env var to PostgreSQL:
+    #   postgresql://cyberguardx:cyberguardx_secure_2026@localhost:5432/cyberguardx
+    "sqlite:///./cyberguardx.db"
 )
 
 # ---------------------------------------------------------------------------

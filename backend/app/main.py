@@ -105,9 +105,7 @@ app.include_router(password.router, tags=["Password"])
 app.include_router(scanner.router,  tags=["Website Scanner"])
 app.include_router(history.router,  tags=["History"])
 
-# ── Create database tables (idempotent) ─────────────────────────────
-Base.metadata.create_all(bind=engine)
-logger.info("Database tables initialized")
+# Database tables are created inside lifespan() at startup
 
 
 # ── Health-check ─────────────────────────────────────────────────────

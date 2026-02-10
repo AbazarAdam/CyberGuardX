@@ -80,7 +80,7 @@ function Stop-Services {
     Write-ColorOutput "✅ Services stopped successfully!" $SuccessColor
 }
 
-function Rebuild-Services {
+function Build-Services {
     Write-ColorOutput "🔨 Rebuilding CyberGuardX containers..." $InfoColor
     docker-compose build --no-cache
     Write-ColorOutput "✅ Rebuild complete!" $SuccessColor
@@ -105,7 +105,7 @@ function Show-Status {
     docker stats --no-stream cyberguardx-backend cyberguardx-frontend 2>$null
 }
 
-function Clean-Environment {
+function Clear-Environment {
     Write-ColorOutput "🧹 Cleaning up Docker environment..." $WarningColor
     Write-ColorOutput "   This will remove containers, volumes, and images." $ErrorColor
     $confirm = Read-Host "Are you sure? (type 'yes' to confirm)"
@@ -163,9 +163,9 @@ switch ($Command) {
     'dev'     { Start-Development }
     'prod'    { Start-Production }
     'stop'    { Stop-Services }
-    'rebuild' { Rebuild-Services }
+    'rebuild' { Build-Services }
     'logs'    { Show-Logs }
     'status'  { Show-Status }
-    'clean'   { Clean-Environment }
+    'clean'   { Clear-Environment }
     default   { Show-Help }
 }
