@@ -61,7 +61,9 @@ class WebsiteScan(Base):
     ssl_scan_json = Column(Text, nullable=True)
     dns_scan_json = Column(Text, nullable=True)
     tech_scan_json = Column(Text, nullable=True)
-    owasp_assessment_json = Column(Text, nullable=True)
+    vulnerabilities_json = Column(Text, nullable=True)
+    owasp_findings_json = Column(Text, nullable=True)
+    recommendations_json = Column(Text, nullable=True)
 
     # Metadata
     scan_duration_ms = Column(Integer, nullable=True)
