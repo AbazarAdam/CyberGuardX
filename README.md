@@ -169,6 +169,11 @@ python -m app.ml.model_evaluation
 Chrome 90+ | Firefox 88+ | Safari 14+ | Edge 90+
 
 ---
+## 👤 Author
+
+**Abazar Adam**
+- GitHub: [@AbazarAdam](https://github.com/AbazarAdam)
+
 
 ## License
 
